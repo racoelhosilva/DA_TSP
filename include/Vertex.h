@@ -3,6 +3,7 @@
 
 #include "Edge.h"
 #include <vector>
+#include <limits>
 
 class Edge;
 
@@ -16,7 +17,8 @@ public:
      * @brief Constructor of the Vertex class
      * @param id The information of the vertex
      */
-    explicit Vertex(int id);
+    explicit Vertex(int id, double latitude = std::numeric_limits<double>::quiet_NaN(),
+                    double longitude = std::numeric_limits<double>::quiet_NaN());
 
     /**
      * @brief Destructor of the Vertex class
@@ -28,6 +30,9 @@ public:
      * @return The info of the vertex
      */
     int getId() const;
+
+    double getLatitude() const;
+    double getLongitude() const;
 
     /**
      * @brief Returns the outgoing edges of the vertex
@@ -96,96 +101,5 @@ protected:
      */
     void deleteEdge(Edge *edge);
 };
-
-Vertex::Vertex(int id): id(id) {}
-
-Vertex::~Vertex() {
-    for (Edge* edge: adj)
-        deleteEdge(edge);
-    return;
-};
-
-Edge * Vertex::addEdge(Vertex *d, double w) {
-    auto newEdge = new Edge(this, d, w);
-    adj.push_back(newEdge);
-    d->incoming.push_back(newEdge);
-    return newEdge;
-}
-
-bool Vertex::removeEdge(int in) {
-    bool removedEdge = false;
-    auto it = adj.begin();
-    while (it != adj.end()) {
-        Edge *edge = *it;
-        Vertex *dest = edge->getDest();
-        if (dest->getId() == in) {
-            it = adj.erase(it);
-            deleteEdge(edge);
-            removedEdge = true;
-        } else {
-            it++;
-        }
-    }
-    return removedEdge;
-}
-
-void Vertex::removeOutgoingEdges() {
-    for(Edge *edge: this->adj) {
-        deleteEdge(edge);
-    }
-    adj.clear();
-}
-
-int Vertex::getId() const {
-    return this->id;
-}
-
-std::vector<Edge*> Vertex::getAdj() const {
-    return this->adj;
-}
-
-bool Vertex::isVisited() const {
-    return this->visited;
-}
-
-
-bool Vertex::isProcessing() const {
-    return this->processing;
-}
-
-Edge *Vertex::getPath() const {
-    return this->path;
-}
-
-std::vector<Edge *> Vertex::getIncoming() const {
-    return this->incoming;
-}
-
-void Vertex::setVisited(bool visited) {
-    this->visited = visited;
-}
-
-void Vertex::setProcessing(bool processing) {
-    this->processing = processing;
-}
-
-void Vertex::setPath(Edge *path) {
-    this->path = path;
-}
-
-void Vertex::deleteEdge(Edge *edge) {
-    Vertex *dest = edge->getDest();
-
-    auto it = dest->incoming.begin();
-    while (it != dest->incoming.end()) {
-        if ((*it)->getOrig()->getId() == id) {
-            it = dest->incoming.erase(it);
-        }
-        else {
-            it++;
-        }
-    }
-    delete edge;
-}
 
 #endif //DA_TSP_VERTEX_H

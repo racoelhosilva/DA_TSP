@@ -43,7 +43,7 @@ public:
      * @param options The vector of options to show in the menu
      * @param choice The option that is currently selected (highlighted)
      */
-    void printMenuOptions(const std::vector<std::string> &options, int choice);
+    void printDatasetsOptions(const std::vector<std::string> &options, int choice);
 
 
     /**
@@ -51,7 +51,7 @@ public:
      * @param options The vector of options to show in the menu
      * @param choice The option that is currently selected (highlighted)
      */
-    void printMenuOptionsNoBottom(const std::vector<std::string> &options, int choice);
+    void printAlgorithmOptions(const std::vector<std::string> &options, int choice);
 
     /**
      * @brief Main menu to select which function should be processed
@@ -67,11 +67,13 @@ public:
      * @brief Menu used to select which dataset should be loaded into the program
      * @return True if the dataset was loaded correctly, False otherwise
      */
-    bool categoryMenu();
+    void categoryMenu();
 
-    bool extraFullyConnectedMenu();
-    bool realWorldMenu();
-    bool toyMenu();
+    void extraFullyConnectedMenu();
+    void realWorldMenu();
+    void toyMenu();
+
+    void statistics();
 
 private:
     int infoSpacing = 8;

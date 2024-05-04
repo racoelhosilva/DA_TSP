@@ -56,53 +56,22 @@ public:
      */
     std::vector<Vertex*> getVertexSet() const;
 
-    double backtrackingTSP();
-    double heldKarpTSP();
-    double doubleMSTTSP();
-    double nearestNeighbourTSP();
-    double christofidesTSP();
-    double realWorldTSP();
+    int getNumEdges() const;
 
-    void parseEdges(std::string edgeFilename);
+    double backtrackingTsp();
+    double heldKarpTsp();
+    double doubleMstTsp();
+    double nearestNeighbourTsp();
+    double christofidesTsp();
+    double realWorldTsp();
+
+    static Graph * parse(const std::string &edgeFilename = "", const std::string &nodeFilename = "");
+
+    static Graph *parseToyGraph(const std::string &edgeFilename);
+    static Graph *parseMediumGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
 private:
     std::vector<Vertex*> vertexSet;
 };
-
-Graph::Graph() = default;
-
-Graph::~Graph() {
-    for (Vertex* v: vertexSet)
-        delete v;
-}
-
-Vertex *Graph::findVertex(int id) const {
-    if (id < 0 || id >= vertexSet.size())
-        return nullptr;
-    return vertexSet[id];
-}
-
-bool Graph::addVertex(Vertex *v) {
-    if (v->getId() != vertexSet.size())
-        return false;
-    vertexSet[v->getId()] = v;
-    return true;
-}
-
-bool Graph::addEdge(int src, int dest, double w) const {
-    Vertex *u = findVertex(src), *v = findVertex(dest);
-    if (u == nullptr || v == nullptr)
-        return false;
-    Edge *e = u->addEdge(v, w), *er = v->addEdge(u, w);
-    e->setReverse(er);
-    er->setReverse(e);
-    return true;
-}
-
-std::vector<Vertex*> Graph::getVertexSet() const {
-    return vertexSet;
-}
-
-bool ;
 
 #endif //DA_TSP_GRAPH_H
