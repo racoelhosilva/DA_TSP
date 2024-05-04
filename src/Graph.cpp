@@ -103,7 +103,6 @@ Graph *Graph::parseToyGraph(const std::string& edgeFilename) {
     for (int id = 0; id < numVertices; id++)
         graph->addVertex(new Vertex(id));
 
-
     edgeFile.clear();
     edgeFile.seekg(0);
     getline(edgeFile, line);
@@ -114,12 +113,75 @@ Graph *Graph::parseToyGraph(const std::string& edgeFilename) {
         iss.clear();
         iss.str(line);
         iss >> id1 >> comma1 >> id2 >> comma2 >> dist;
-        if (iss.fail() || comma1 != ',' || comma2 != ',') {
+        if (iss.fail() || comma1 != ',' || comma2 != ',' || !graph->addEdge(id1, id2, dist)) {
             delete graph;
             return nullptr;
         }
-        graph->addEdge(id1, id2, dist);
     }
 
     return graph;
 }
+
+Graph *Graph::parseMediumGraph(const std::string &nodeFilename, const std::string &edgeFilename) {
+    ifstream nodeFile(nodeFilename), edgeFile(edgeFilename);
+    if (nodeFile.fail() || edgeFile.fail())
+        return nullptr;
+
+    istringstream iss(edgeFilename);
+    string text;
+    int numVertices;
+
+    getline(iss, text, '_');
+    getline(iss, text, '.');
+    numVertices = stoi(text);
+
+    auto graph = new Graph;
+
+    string line;
+    int id1, id2;
+    double lat, lon, dist;
+    char comma1, comma2;
+
+    getline(nodeFile, line);
+    if (nodeFile.fail())  {
+        delete graph;
+        return nullptr;
+    }
+    
+    while (getline(nodeFile, line)) {
+        if (line == "")
+            break;
+        iss.clear();
+        iss.str(line);
+        iss >> id1 >> comma1 >> lat >> comma2 >> lon;
+        if (iss.fail() || comma1 != ',' || comma2 != ',') {
+            delete graph;
+            return nullptr;
+        }
+        if (id1 >= numVertices)
+            break;
+        if (!graph->addVertex(new Vertex(id1, lat, lon))) {
+            delete graph;
+            return nullptr;
+        }
+    }
+
+    while (getline(edgeFile, line)) {
+        if (line == "")
+            break;
+        iss.clear();
+        iss.str(line);
+        iss >> id1 >> comma1 >> id2 >> comma2 >> dist;
+        if (iss.fail() || comma1 != ',' || comma2 != ',' || !graph->addEdge(id1, id2, dist)) {
+            delete graph;
+            return nullptr;
+        }
+    }
+
+    return graph;
+}
+
+Graph *Graph::parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename) {
+    return nullptr;
+}
+

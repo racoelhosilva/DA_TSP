@@ -69,6 +69,7 @@ public:
 
     static Graph *parseToyGraph(const std::string &edgeFilename);
     static Graph *parseMediumGraph(const std::string &nodeFilename, const std::string &edgeFilename);
+    static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
 private:
     std::vector<Vertex*> vertexSet;

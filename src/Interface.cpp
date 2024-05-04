@@ -289,18 +289,18 @@ void Interface::extraFullyConnectedMenu() {
     endCapture();
 
     switch (choice) {
-        case 1: graph = Graph::parse("../graphs/Extra Fully Connected/edges_25.csv"); break;
-        case 2: graph = Graph::parse("../graphs/Extra Fully Connected/edges_50.csv"); break;
-        case 3: graph = Graph::parse("../graphs/Extra Fully Connected/edges_75.csv"); break;
-        case 4: graph = Graph::parse("../graphs/Extra Fully Connected/edges_100.csv"); break;
-        case 5: graph = Graph::parse("../graphs/Extra Fully Connected/edges_200.csv"); break;
-        case 6: graph = Graph::parse("../graphs/Extra Fully Connected/edges_300.csv"); break;
-        case 7: graph = Graph::parse("../graphs/Extra Fully Connected/edges_400.csv"); break;
-        case 8: graph = Graph::parse("../graphs/Extra Fully Connected/edges_500.csv"); break;
-        case 9: graph = Graph::parse("../graphs/Extra Fully Connected/edges_600.csv"); break;
-        case 10: graph = Graph::parse("../graphs/Extra Fully Connected/edges_700.csv"); break;
-        case 11: graph = Graph::parse("../graphs/Extra Fully Connected/edges_800.csv"); break;
-        case 12: graph = Graph::parse("../graphs/Extra Fully Connected/edges_900.csv"); break;
+        case 1: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_25.csv"); break;
+        case 2: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_50.csv"); break;
+        case 3: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_75.csv"); break;
+        case 4: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_100.csv"); break;
+        case 5: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_200.csv"); break;
+        case 6: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_300.csv"); break;
+        case 7: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_400.csv"); break;
+        case 8: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_500.csv"); break;
+        case 9: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_600.csv"); break;
+        case 10: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_700.csv"); break;
+        case 11: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_800.csv"); break;
+        case 12: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_900.csv"); break;
         default:
             categoryMenu();
     }
@@ -333,9 +333,9 @@ void Interface::realWorldMenu() {
     endCapture();
 
     switch (choice) {
-        case 1: graph = Graph::parse("../graphs/Real World/graph1/edges.csv"); break;
-        case 2: graph = Graph::parse("../graphs/Real World/graph2/edges.csv"); break;
-        case 3: graph = Graph::parse("../graphs/Real World/graph3/edges.csv"); break;
+        case 1: graph = Graph::parseRealWorldGraph("../graphs/Real World/graph1/nodes.csv", "../graphs/Real World/graph1/edges.csv"); break;
+        case 2: graph = Graph::parseRealWorldGraph("../graphs/Real World/graph2/nodes.csv", "../graphs/Real World/graph2/edges.csv"); break;
+        case 3: graph = Graph::parseRealWorldGraph("../graphs/Real World/graph3/nodes.csv", "../graphs/Real World/graph3/edges.csv"); break;
         default:
             categoryMenu();
     }
