@@ -1,6 +1,11 @@
-#include <iostream>
+#include "include/Interface.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+    Interface interface;
+    if (!interface.init()){
+        return 1;
+    }
+    while(true){
+        interface.mainMenu();
+    }
 }
