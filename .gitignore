@@ -1,0 +1,6 @@
+cmake-build-debug
+.idea
+.git
+__MACOSX
+*.DS_STORE
+docs/output/*
