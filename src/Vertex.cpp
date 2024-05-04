@@ -7,7 +7,7 @@ Vertex::Vertex(int id, double latitude, double longitude)
 
 Vertex::~Vertex() {
     for (Edge* edge: adj)
-        deleteEdge(edge);
+        delete edge;
     adj.clear();
 };
 

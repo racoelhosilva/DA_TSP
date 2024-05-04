@@ -146,7 +146,7 @@ void Interface::mainMenu() {
     endCapture();
 
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-    double result;
+    double result = NAN;
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
@@ -191,13 +191,13 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
-            for (auto v : graph->getVertexSet()){
+            Vertex *v = graph->getVertexSet()[0];
                 cout << v->getId() << ": ";
                 for (auto e : v->getAdj()) {
                     cout << e->getDest()->getId() << '(' << e->getWeight() << ')' << ' ';
                 }
                 cout << '\n';
-            }
+
             cout << graph->getNumEdges() << '\n';
             waitInput();
             return;

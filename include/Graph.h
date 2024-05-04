@@ -71,6 +71,8 @@ public:
     static Graph *parseMediumGraph(const std::string &nodeFilename, const std::string &edgeFilename);
     static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
+    static double haversineDistance(const Vertex *v1, const Vertex *v2);
+
 private:
     std::vector<Vertex*> vertexSet;
 };

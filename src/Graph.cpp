@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -182,6 +183,67 @@ Graph *Graph::parseMediumGraph(const std::string &nodeFilename, const std::strin
 }
 
 Graph *Graph::parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename) {
-    return nullptr;
+    ifstream nodeFile(nodeFilename), edgeFile(edgeFilename);
+    if (nodeFile.fail() || edgeFile.fail())
+        return nullptr;
+
+    auto graph = new Graph;
+
+    string line;
+    int id1, id2;
+    double lat, lon, dist;
+    char comma1, comma2;
+    istringstream iss;
+
+    getline(nodeFile, line);
+    if (nodeFile.fail())  {
+        delete graph;
+        return nullptr;
+    }
+    while (getline(nodeFile, line)) {
+        if (line == "")
+            break;
+        iss.clear();
+        iss.str(line);
+        iss >> id1 >> comma1 >> lat >> comma2 >> lon;
+        if (iss.fail() || comma1 != ',' || comma2 != ',' || !graph->addVertex(new Vertex(id1, lat, lon))) {
+            delete graph;
+            return nullptr;
+        }
+    }
+
+    getline(edgeFile, line);
+    if (edgeFile.fail())  {
+        delete graph;
+        return nullptr;
+    }
+    while (getline(edgeFile, line)) {
+        if (line == "")
+            break;
+        iss.clear();
+        iss.str(line);
+        iss >> id1 >> comma1 >> id2 >> comma2 >> dist;
+        if (iss.fail() || comma1 != ',' || comma2 != ',' || !graph->addEdge(id1, id2, dist)) {
+            delete graph;
+            return nullptr;
+        }
+    }
+
+    return graph;
 }
 
+double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
+    double dLat = (v2->getLatitude() - v1->getLatitude()) * M_PI / 180.0;
+    double dLon = (v2->getLongitude() - v1->getLongitude()) * M_PI / 180.0;
+
+    // convert to radians
+    double lat1 = (v1->getLatitude()) * M_PI / 180.0;
+    double lat2 = (v2->getLatitude()) * M_PI / 180.0;
+
+    // apply formula
+    double a = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1) * cos(lat2);
+    double earthRadius = 6371;
+    double c = 2 * asin(sqrt(a));
+
+    return earthRadius * c;
+}
