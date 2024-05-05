@@ -1,10 +1,12 @@
 #include "Graph.h"
+#include "Ufds.h"
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <cmath>
 #include <cstdint>
+#include <algorithm>
 
 using namespace std;
 
@@ -468,11 +470,41 @@ bool Graph::respectsTriangularInequality() {
     return true;
 }
 
-void Graph::kruskal() {
+void Graph::kruskal(std::vector<Edge*> &edges) {
     if (vertexSet_.empty())
         return;
 
+    Ufds ufds((int)vertexSet_.size());
+    sort(edges.begin(), edges.end(), [](Edge *edge1, Edge *edge2) {
+        return edge1->getWeight() < edge2->getWeight();
+    });
 
+    for (Edge *edge: edges) {
+        Vertex *u = edge->getOrig(), *v = edge->getDest();
+        if (!ufds.isSameSet(u->getId(), v->getId())) {
+            edge->setSelected(true);
+            edge->getReverse()->setSelected(true);
+            ufds.linkSets(u->getId(), v->getId());
+        }
+    }
+
+    for (Vertex *vertex: vertexSet_)
+        vertex->setVisited(false);
+    Vertex *root = vertexSet_[0];
+    root->setPath(nullptr);
+    kruskalDfs(root);
 }
 
+void Graph::kruskalDfs(Vertex *v) {
+    v->setVisited(true);
+    for (Edge *e: v->getAdj()) {
+        if (!e->isSelected())
+            continue;
 
+        Vertex *w = e->getDest();
+        if (!w->isVisited()) {
+            w->setPath(e->getReverse());
+            kruskalDfs(w);
+        }
+    }
+}

@@ -79,8 +79,8 @@ private:
 
     bool respectsTriangularInequality();
 
-    void kruskalDfs();
-    void kruskal();
+    void kruskalDfs(Vertex *vertex);
+    void kruskal(std::vector<Edge*> &edges);
 
     std::vector<Vertex*> vertexSet_;
 };
