@@ -191,12 +191,13 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
-            Vertex *v = graph->getVertexSet()[0];
+            for (Vertex *v: graph->getVertexSet()) {
                 cout << v->getId() << ": ";
-                for (auto e : v->getAdj()) {
+                for (auto e: v->getAdj()) {
                     cout << e->getDest()->getId() << '(' << e->getWeight() << ')' << ' ';
                 }
                 cout << '\n';
+            }
 
             cout << graph->getNumEdges() << '\n';
             waitInput();
@@ -213,8 +214,8 @@ void Interface::mainMenu() {
     }
 
     std::chrono::duration<double> execution = end - start;
-    cout << "Result: " << result << '\n';
-    cout << "Execution: " << execution.count() << '\n';
+    cout << "Result: " << fixed << setprecision(3) << result << '\n';
+    cout << "Execution: " << fixed << setprecision(10) << execution.count() << '\n';
     waitInput();
 }
 
