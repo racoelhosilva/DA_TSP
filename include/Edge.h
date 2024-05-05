@@ -44,12 +44,6 @@ public:
     double getWeight() const;
 
     /**
-     * @brief Returns the flow through the edge
-     * @return The flow through the edge
-     */
-    double getFlow() const;
-
-    /**
      * @brief Returns if the edge is selected
      * @return True if the edge was set as selected, and false otherwise
      */
@@ -60,18 +54,6 @@ public:
      * @return Pointer to the reverse edge
      */
     Edge *getReverse() const;
-
-    /**
-     * @brief Sets the weight of the edge
-     * @param weight The new weight of the edge
-     */
-    void setWeight(double weight);
-
-    /**
-     * @brief Sets the flow through the edge
-     * @param flow The new flow through the edge
-     */
-    void setFlow(double flow);
 
     /**
      * @brief Sets if the edge is selected

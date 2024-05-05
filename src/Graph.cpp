@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <cmath>
+#include <cstdint>
 
 using namespace std;
 
@@ -100,8 +101,74 @@ double Graph::backtrackingTsp(int startId) {
     return minDist;
 }
 
+#ifdef __unix__
+#define TRAIL_ZERO(n) __builtin_ctz(n)
+#else
+#define TRAIL_ZERO(n) _BitScanForward(n)
+#endif
+
+uint64_t initMask(int k) {
+    return ((uint64_t)1 << k) - 1;
+}
+
+uint64_t nextMask(uint64_t mask, int k) {
+    uint64_t aux = mask | (mask - 1);
+    return (aux + 1) | (((~aux & (aux + 1)) - 1) >> (TRAIL_ZERO(mask) + 1));
+}
+
+uint64_t subsetMask(uint64_t mask, int v) {
+    return (mask & (((uint64_t)1 << v) - 1)) | ((mask & (UINT64_MAX << (v + 1))) >> 1);
+}
+
 double Graph::heldKarpTsp(int startId) {
-    return 0.0;
+    int numVertex = (int)vertexSet_.size();
+    if (numVertex <= 1)
+        return 0;
+    if (numVertex > 64)
+        return -1;  // Because we're using a 64-bit bitmask
+
+    auto dist = getDistMatrix();
+
+    const uint64_t numSubsets = (uint64_t)1 << (numVertex - 2);
+    auto dp = new double*[numVertex - 1];
+    for (int i = 0; i < numVertex - 1; i++) {
+        dp[i] = new double[numSubsets];
+        for (uint64_t j = 0; j < numSubsets; j++)
+            dp[i][j] = numeric_limits<double>::infinity();
+    }
+
+    const uint64_t maxMask = ((uint64_t)1 << (numVertex - 1)) - 1;
+    uint64_t iMask, jMask;
+    for (int i = 1; i < numVertex; i++)
+        dp[i - 1][0] = dist[0][i];
+    for (int k = 2; k < numVertex; k++) {
+        for (uint64_t mask = initMask(k); mask <= maxMask; mask = nextMask(mask, k)) {
+            int i = 0;
+            for (uint64_t sel1 = mask; sel1 != 0; sel1 >>= (TRAIL_ZERO(sel1) + 1)) {
+                i += TRAIL_ZERO(sel1) + 1;
+                iMask = subsetMask(mask, i - 1);
+                int j = 0;
+                for (uint64_t sel2 = mask; sel2 != 0; sel2 >>= (TRAIL_ZERO(sel2) + 1)) {
+                    j += TRAIL_ZERO(sel2) + 1;
+                    jMask = subsetMask(mask & ~((uint64_t)1 << (i - 1)), j - 1);
+                    if (i != j)
+                        dp[i - 1][iMask] = min(dp[i - 1][iMask], dp[j - 1][jMask] + dist[j][i]);
+                }
+            }
+        }
+    }
+
+    double res = numeric_limits<double>::infinity();
+    for (int i = 1; i < numVertex; i++)
+        res = min(res, dp[i - 1][initMask(numVertex - 2)] + dist[i][0]);
+
+    for (int i = 0; i < numVertex - 1; i++)
+        delete [] dp[i];
+    delete [] dp;
+
+    deleteMatrix(dist);
+
+    return res;
 }
 
 double Graph::doubleMstTsp(int startId) {
@@ -321,6 +388,10 @@ Graph *Graph::parseRealWorldGraph(const std::string &nodeFilename, const std::st
 }
 
 double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
+    if (isnan(v1->getLatitude()) || isnan(v1->getLongitude())
+        || isnan(v2->getLatitude()) || isnan(v2->getLongitude()))
+        return numeric_limits<double>::infinity();
+
     double dLat = (v2->getLatitude() - v1->getLatitude()) * M_PI / 180.0;
     double dLon = (v2->getLongitude() - v1->getLongitude()) * M_PI / 180.0;
 
@@ -335,3 +406,66 @@ double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
 
     return earthRadius * c;
 }
+
+double **Graph::getDistMatrix() {
+    auto matrix = new double*[vertexSet_.size()];
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
+        matrix[i] = new double[vertexSet_.size()];
+        for (int j = 0; j < (int)vertexSet_.size(); j++)
+            matrix[i][j] = i == j ? 0 : numeric_limits<double>::infinity();
+    }
+    for (Vertex *orig: vertexSet_) {
+        for (Edge *edge: orig->getAdj()) {
+            Vertex *dest = edge->getDest();
+            matrix[orig->getId()][dest->getId()] = edge->getWeight();
+        }
+    }
+    return matrix;
+}
+
+double **Graph::getCompleteDistMatrix() {
+    auto matrix = new double*[vertexSet_.size()];
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
+        matrix[i] = new double[vertexSet_.size()];
+        for (int j = 0; j < (int)vertexSet_.size(); j++)
+            matrix[i][j] = i != j ? 0 : numeric_limits<double>::quiet_NaN();
+    }
+    for (Vertex *orig: vertexSet_) {
+        for (Edge *edge: orig->getAdj()) {
+            Vertex *dest = edge->getDest();
+            matrix[orig->getId()][dest->getId()] = edge->getWeight();
+        }
+    }
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
+        for (int j = 0; j < (int)vertexSet_.size(); j++) {
+            if (matrix[i][j] == numeric_limits<double>::quiet_NaN())
+                matrix[i][j] = haversineDistance(findVertex(i), findVertex(j));
+        }
+    }
+    return matrix;
+}
+
+void Graph::deleteMatrix(double **matrix) {
+    for (int i = 0; i < (int)vertexSet_.size(); i++)
+        delete [] matrix[i];
+    delete [] matrix;
+}
+
+bool Graph::respectsTriangularInequality() {
+    double **dist = getDistMatrix();
+    for (int w = 0; w < (int)vertexSet_.size(); w++) {
+        for (int v = 0; v < (int)vertexSet_.size(); v++) {
+            for (int u = 0; u < w; u++) {
+                if (dist[u][w] > dist[u][v] + dist[v][w]) {
+                    deleteMatrix(dist);
+                    return false;
+                }
+            }
+        }
+    }
+
+    deleteMatrix(dist);
+    return true;
+}
+
+

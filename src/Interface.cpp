@@ -191,12 +191,13 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
-            Vertex *v = graph->getVertexSet()[0];
+            for (Vertex *v: graph->getVertexSet()) {
                 cout << v->getId() << ": ";
-                for (auto e : v->getAdj()) {
+                for (auto e: v->getAdj()) {
                     cout << e->getDest()->getId() << '(' << e->getWeight() << ')' << ' ';
                 }
                 cout << '\n';
+            }
 
             cout << graph->getNumEdges() << '\n';
             waitInput();
