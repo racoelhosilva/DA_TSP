@@ -425,7 +425,7 @@ double **Graph::getCompleteDistMatrix() {
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
         for (int j = 0; j < (int)vertexSet_.size(); j++)
-            matrix[i][j] = i == j ? 0 : -1;
+            matrix[i][j] = i == j ? 0 : std::numeric_limits<double>::quiet_NaN();
     }
     for (Vertex *orig: vertexSet_) {
         for (Edge *edge: orig->getAdj()) {
@@ -435,7 +435,7 @@ double **Graph::getCompleteDistMatrix() {
     }
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         for (int j = 0; j < (int)vertexSet_.size(); j++) {
-            if (matrix[i][j] == -1){
+            if (isnan(matrix[i][j])){
                 matrix[i][j] = haversineDistance(findVertex(i), findVertex(j));
             }
         }
