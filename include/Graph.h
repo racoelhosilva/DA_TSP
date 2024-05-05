@@ -58,12 +58,12 @@ public:
 
     int getNumEdges() const;
 
-    double backtrackingTsp();
-    double heldKarpTsp();
-    double doubleMstTsp();
-    double nearestNeighbourTsp();
-    double christofidesTsp();
-    double realWorldTsp();
+    double backtrackingTsp(int startId);
+    double heldKarpTsp(int startId);
+    double doubleMstTsp(int startId);
+    double nearestNeighbourTsp(int startId);
+    double christofidesTsp(int startId);
+    double realWorldTsp(int startId);
 
     static Graph * parse(const std::string &edgeFilename = "", const std::string &nodeFilename = "");
 
@@ -74,7 +74,7 @@ public:
     static double haversineDistance(const Vertex *v1, const Vertex *v2);
 
 private:
-    std::vector<Vertex*> vertexSet;
+    std::vector<Vertex*> vertexSet_;
 };
 
 #endif //DA_TSP_GRAPH_H

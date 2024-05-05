@@ -58,6 +58,8 @@ public:
      */
     Edge *getPath() const;
 
+    Edge *getPathToStart() const;
+
     /**
      * @brief Sets if the vertex has been visited
      * @param visited Whether the vertex was visited or not
@@ -76,6 +78,8 @@ public:
      */
     void setPath(Edge *path);
 
+    void setPathToStart(Edge *pathToStart);
+
     /**
      * @brief Adds an outgoing edge from this vertex to dest, and the same edge as an incoming edge of dest
      * Complexity: O(1).
@@ -83,16 +87,17 @@ public:
      * @param w Edge's weight
      * @return Pointer to the newly created edge
      */
-    virtual Edge *addEdge(Vertex *dest, double w);
+    Edge *addEdge(Vertex *dest, double w);
 
 protected:
-    int id;
-    double latitude, longitude;
+    int id_;
+    double latitude_, longitude_;
 
-    std::vector<Edge *> adj;
-    bool visited = false;
-    bool processing = false;
-    Edge *path = nullptr;
+    std::vector<Edge *> adj_;
+    bool visited_ = false;
+    bool processing_ = false;
+    Edge *path_ = nullptr;
+    Edge *pathToStart_ = nullptr;
 
     /**
      * @brief Removes the edge from the list of incoming edges of the destination and frees it.
