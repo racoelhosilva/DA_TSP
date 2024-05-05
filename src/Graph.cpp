@@ -185,7 +185,7 @@ double Graph::nearestNeighbourTsp(int startId) {
         vertex->setPathToStart(nullptr);
     }
 
-    auto dist = getDistMatrix();
+    auto dist = getCompleteDistMatrix();
 
     double distance = 0.0;
     Vertex *cur = start;
@@ -398,7 +398,7 @@ double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
 
     // apply formula
     double a = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1) * cos(lat2);
-    double earthRadius = 6371;
+    double earthRadius = 6371000;
     double c = 2 * asin(sqrt(a));
 
     return earthRadius * c;
@@ -425,7 +425,7 @@ double **Graph::getCompleteDistMatrix() {
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
         for (int j = 0; j < (int)vertexSet_.size(); j++)
-            matrix[i][j] = i != j ? 0 : numeric_limits<double>::quiet_NaN();
+            matrix[i][j] = i == j ? 0 : -1;
     }
     for (Vertex *orig: vertexSet_) {
         for (Edge *edge: orig->getAdj()) {
@@ -435,8 +435,9 @@ double **Graph::getCompleteDistMatrix() {
     }
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         for (int j = 0; j < (int)vertexSet_.size(); j++) {
-            if (matrix[i][j] == numeric_limits<double>::quiet_NaN())
+            if (matrix[i][j] == -1){
                 matrix[i][j] = haversineDistance(findVertex(i), findVertex(j));
+            }
         }
     }
     return matrix;
