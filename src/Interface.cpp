@@ -150,42 +150,42 @@ void Interface::mainMenu() {
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
-            result = graph->backtrackingTsp();
+            result = graph->backtrackingTsp(0);
             end = chrono::high_resolution_clock::now();
             backtrackResult = result;
             break;
         }
         case 2: {
             start = chrono::high_resolution_clock::now();
-            result = graph->heldKarpTsp();
+            result = graph->heldKarpTsp(0);
             end = chrono::high_resolution_clock::now();
             heldKarpResult = result;
             break;
         }
         case 3: {
             start = chrono::high_resolution_clock::now();
-            result = graph->doubleMstTsp();
+            result = graph->doubleMstTsp(0);
             end = chrono::high_resolution_clock::now();
             doubleMSTResult = result;
             break;
         }
         case 4: {
             start = chrono::high_resolution_clock::now();
-            result = graph->nearestNeighbourTsp();
+            result = graph->nearestNeighbourTsp(0);
             end = chrono::high_resolution_clock::now();
             nearestNeighborResult = result;
             break;
         }
         case 5: {
             start = chrono::high_resolution_clock::now();
-            result = graph->christofidesTsp();
+            result = graph->christofidesTsp(0);
             end = chrono::high_resolution_clock::now();
             christofidesResult = result;
             break;
         }
         case 6: {
             start = chrono::high_resolution_clock::now();
-            result = graph->realWorldTsp();
+            result = graph->realWorldTsp(0);
             end = chrono::high_resolution_clock::now();
             realWorldResult = result;
             break;

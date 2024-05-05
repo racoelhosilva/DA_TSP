@@ -86,11 +86,11 @@ public:
     void setReverse(Edge *reverse);
 
 private:
-    Vertex* orig;
-    Vertex* dest;
-    double weight;
-    bool selected;
-    Edge* reverse;
+    Vertex* orig_;
+    Vertex* dest_;
+    double weight_;
+    bool selected_;
+    Edge* reverse_;
 };
 
 #endif //DA_TSP_EDGE_H
