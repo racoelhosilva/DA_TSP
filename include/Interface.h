@@ -80,12 +80,12 @@ private:
     int width = 80;
     Graph* graph = nullptr;
 
-    double backtrackResult = NAN;
-    double heldKarpResult = NAN;
-    double doubleMSTResult = NAN;
-    double nearestNeighborResult = NAN;
-    double christofidesResult = NAN;
-    double realWorldResult = NAN;
+    std::pair<double, double> backtrackResult = {NAN, NAN};
+    std::pair<double, double> heldKarpResult = {NAN, NAN};
+    std::pair<double, double> doubleMSTResult = {NAN, NAN};
+    std::pair<double, double> nearestNeighborResult = {NAN, NAN};
+    std::pair<double, double> christofidesResult = {NAN, NAN};
+    std::pair<double, double> realWorldResult = {NAN, NAN};
 };
 
 #endif //DA_TSP_INTERFACE_H

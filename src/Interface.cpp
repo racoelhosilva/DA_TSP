@@ -161,48 +161,55 @@ void Interface::mainMenu() {
     endCapture();
 
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+    std::chrono::duration<double> execution;
     double result = NAN;
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
             result = graph->backtrackingTsp(0);
             end = chrono::high_resolution_clock::now();
-            backtrackResult = result;
+            execution = end - start;
+            backtrackResult = {result, execution.count()};
             break;
         }
         case 2: {
             start = chrono::high_resolution_clock::now();
             result = graph->heldKarpTsp(0);
             end = chrono::high_resolution_clock::now();
-            heldKarpResult = result;
+            execution = end - start;
+            heldKarpResult = {result, execution.count()};
             break;
         }
         case 3: {
             start = chrono::high_resolution_clock::now();
             result = graph->doubleMstTsp(0);
             end = chrono::high_resolution_clock::now();
-            doubleMSTResult = result;
+            execution = end - start;
+            doubleMSTResult = {result, execution.count()};
             break;
         }
         case 4: {
             start = chrono::high_resolution_clock::now();
             result = graph->nearestNeighbourTsp(0);
             end = chrono::high_resolution_clock::now();
-            nearestNeighborResult = result;
+            execution = end - start;
+            nearestNeighborResult = {result, execution.count()};
             break;
         }
         case 5: {
             start = chrono::high_resolution_clock::now();
             result = graph->christofidesTsp(0);
             end = chrono::high_resolution_clock::now();
-            christofidesResult = result;
+            execution = end - start;
+            christofidesResult = {result, execution.count()};
             break;
         }
         case 6: {
             start = chrono::high_resolution_clock::now();
             result = graph->realWorldTsp(0);
             end = chrono::high_resolution_clock::now();
-            realWorldResult = result;
+            execution = end - start;
+            realWorldResult = {result, execution.count()};
             break;
         }
         case 7: {
@@ -215,7 +222,6 @@ void Interface::mainMenu() {
             break;
     }
 
-    std::chrono::duration<double> execution = end - start;
     cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
     cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
     waitInput();
@@ -382,7 +388,12 @@ void Interface::toyMenu() {
 }
 
 void Interface::statistics() {
-    cout << "Statistics :)\n";
+    if (!isnan(backtrackResult.first)) cout << "Backtrack: " << backtrackResult.first << ' ' << backtrackResult.second << '\n';
+    if (!isnan(heldKarpResult.first)) cout << "Held-Karp: " << heldKarpResult.first << ' ' << heldKarpResult.second << '\n';
+    if (!isnan(doubleMSTResult.first)) cout << "Double MST: " << doubleMSTResult.first << ' ' << doubleMSTResult.second << '\n';
+    if (!isnan(nearestNeighborResult.first)) cout << "Nearest Neighbor: " << nearestNeighborResult.first << ' ' << nearestNeighborResult.second << '\n';
+    if (!isnan(christofidesResult.first)) cout << "Christofides*: " << christofidesResult.first << ' ' << christofidesResult.second << '\n';
+    if (!isnan(realWorldResult.first)) cout << "Real World: " << realWorldResult.first << ' ' << realWorldResult.second << '\n';
 }
 
 void Interface::exitMenu() {
