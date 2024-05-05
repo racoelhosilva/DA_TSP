@@ -60,6 +60,8 @@ public:
 
     Edge *getPathToStart() const;
 
+    int getDegree() const;
+
     /**
      * @brief Sets if the vertex has been visited
      * @param visited Whether the vertex was visited or not
@@ -80,6 +82,8 @@ public:
 
     void setPathToStart(Edge *pathToStart);
 
+    void setDegree(int degree);
+
     /**
      * @brief Adds an outgoing edge from this vertex to dest, and the same edge as an incoming edge of dest
      * Complexity: O(1).
@@ -98,6 +102,9 @@ protected:
     bool processing_ = false;
     Edge *path_ = nullptr;
     Edge *pathToStart_ = nullptr;
+    int degree_ = 0;
+
+protected:
 
     /**
      * @brief Removes the edge from the list of incoming edges of the destination and frees it.

@@ -81,6 +81,7 @@ private:
 
     void kruskalDfs(Vertex *vertex);
     void kruskal(std::vector<Edge*> &edges);
+    void minWeightPerfectMatchingGreedy(const std::vector<Edge*> &sortedEdges);
 
     std::vector<Vertex*> vertexSet_;
 };

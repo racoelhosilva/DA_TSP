@@ -508,3 +508,14 @@ void Graph::kruskalDfs(Vertex *v) {
         }
     }
 }
+
+void Graph::minWeightPerfectMatchingGreedy(const vector<Edge *> &sortedEdges) {
+    for (Edge *edge: sortedEdges) {
+        Vertex *u = edge->getOrig(), *v = edge->getDest();
+        if (u->isVisited() || v->isVisited())
+            continue;
+        edge->setSelected(true);
+        u->setVisited(true);
+        v->setVisited(true);
+    }
+}
