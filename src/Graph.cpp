@@ -10,20 +10,20 @@ using namespace std;
 Graph::Graph() = default;
 
 Graph::~Graph() {
-    for (Vertex* v: vertexSet)
+    for (Vertex* v: vertexSet_)
         delete v;
 }
 
 Vertex *Graph::findVertex(int id) const {
-    if (id < 0 || id >= (int)vertexSet.size())
+    if (id < 0 || id >= (int)vertexSet_.size())
         return nullptr;
-    return vertexSet[id];
+    return vertexSet_[id];
 }
 
 bool Graph::addVertex(Vertex *v) {
-    if (v->getId() != (int)vertexSet.size())
+    if (v->getId() != (int)vertexSet_.size())
         return false;
-    vertexSet.push_back(v);
+    vertexSet_.push_back(v);
     return true;
 }
 
@@ -38,37 +38,85 @@ bool Graph::addEdge(int src, int dest, double w) const {
 }
 
 std::vector<Vertex*> Graph::getVertexSet() const {
-    return vertexSet;
+    return vertexSet_;
 }
 
 int Graph::getNumEdges() const {
     int numDirEdges = 0;
-    for (Vertex *vertex: vertexSet)
+    for (Vertex *vertex: vertexSet_)
         numDirEdges += (int)vertex->getAdj().size();
     return numDirEdges / 2;
 }
 
-double Graph::backtrackingTsp() {
+void backtrackingTspAux(Vertex* curr, int verticesLeft, double currDist, double &minDist) {
+    if (verticesLeft == 0) {
+        Edge *pathToStart = curr->getPathToStart();
+        if (pathToStart != nullptr && currDist + pathToStart->getWeight() < minDist) {
+            minDist = currDist + pathToStart->getWeight();
+            curr->setPath(nullptr);
+        }
+        return;
+    }
+
+    double newMinDist = minDist;
+    curr->setVisited(true);
+
+    for (Edge *edge: curr->getAdj()) {
+        if (currDist + edge->getWeight() >= minDist)
+            continue;
+
+        Vertex *dest = edge->getDest();
+        if (dest->isVisited())
+            continue;
+
+        backtrackingTspAux(dest, verticesLeft - 1, currDist + edge->getWeight(), newMinDist);
+        if (newMinDist < minDist) {
+            minDist = newMinDist;
+            curr->setPath(edge);
+        }
+    }
+
+    curr->setVisited(false);
+}
+
+double Graph::backtrackingTsp(int startId) {
+    Vertex *start = findVertex(startId);
+    if (start == nullptr)
+        return -1;
+
+    for (Vertex *vertex: vertexSet_) {
+        vertex->setVisited(false);
+        vertex->setPathToStart(nullptr);
+    }
+
+    start->setVisited(true);
+    for (Edge *edge: start->getAdj()) {
+        Vertex *dest = edge->getDest();
+        dest->setPathToStart(edge->getReverse());
+    }
+
+    double minDist = std::numeric_limits<double>::infinity();
+    backtrackingTspAux(start, (int)vertexSet_.size() - 1, 0, minDist);
+    return minDist;
+}
+
+double Graph::heldKarpTsp(int startId) {
     return 0.0;
 }
 
-double Graph::heldKarpTsp() {
+double Graph::doubleMstTsp(int startId) {
     return 0.0;
 }
 
-double Graph::doubleMstTsp() {
+double Graph::nearestNeighbourTsp(int startId) {
     return 0.0;
 }
 
-double Graph::nearestNeighbourTsp() {
+double Graph::christofidesTsp(int startId) {
     return 0.0;
 }
 
-double Graph::christofidesTsp() {
-    return 0.0;
-}
-
-double Graph::realWorldTsp() {
+double Graph::realWorldTsp(int startId) {
     return 0.0;
 }
 
@@ -90,7 +138,7 @@ Graph *Graph::parseToyGraph(const std::string& edgeFilename) {
     if (edgeFile.fail())
         return nullptr;
     while (getline(edgeFile, line)) {
-        if (line == "")
+        if (line.empty())
             break;
         iss.clear();
         iss.str(line);
@@ -109,7 +157,7 @@ Graph *Graph::parseToyGraph(const std::string& edgeFilename) {
     getline(edgeFile, line);
 
     while (getline(edgeFile, line)) {
-        if (line == "")
+        if (line.empty())
             break;
         iss.clear();
         iss.str(line);
@@ -150,7 +198,7 @@ Graph *Graph::parseMediumGraph(const std::string &nodeFilename, const std::strin
     }
     
     while (getline(nodeFile, line)) {
-        if (line == "")
+        if (line.empty())
             break;
         iss.clear();
         iss.str(line);
@@ -168,7 +216,7 @@ Graph *Graph::parseMediumGraph(const std::string &nodeFilename, const std::strin
     }
 
     while (getline(edgeFile, line)) {
-        if (line == "")
+        if (line.empty())
             break;
         iss.clear();
         iss.str(line);
@@ -201,7 +249,7 @@ Graph *Graph::parseRealWorldGraph(const std::string &nodeFilename, const std::st
         return nullptr;
     }
     while (getline(nodeFile, line)) {
-        if (line == "")
+        if (line.empty())
             break;
         iss.clear();
         iss.str(line);
@@ -218,7 +266,7 @@ Graph *Graph::parseRealWorldGraph(const std::string &nodeFilename, const std::st
         return nullptr;
     }
     while (getline(edgeFile, line)) {
-        if (line == "")
+        if (line.empty())
             break;
         iss.clear();
         iss.str(line);

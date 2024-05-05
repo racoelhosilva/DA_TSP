@@ -3,72 +3,80 @@
 #include <limits>
 
 Vertex::Vertex(int id, double latitude, double longitude)
-               : id(id), latitude(latitude), longitude(longitude) {}
+               : id_(id), latitude_(latitude), longitude_(longitude) {}
 
 Vertex::~Vertex() {
-    for (Edge* edge: adj)
+    for (Edge* edge: adj_)
         delete edge;
-    adj.clear();
+    adj_.clear();
 };
 
 Edge * Vertex::addEdge(Vertex *d, double w) {
     auto newEdge = new Edge(this, d, w);
-    adj.push_back(newEdge);
+    adj_.push_back(newEdge);
     return newEdge;
 }
 
 int Vertex::getId() const {
-    return id;
+    return id_;
 }
 
 double Vertex::getLatitude() const {
-    return latitude;
+    return latitude_;
 }
 
 double Vertex::getLongitude() const {
-    return longitude;
+    return longitude_;
 }
 
 std::vector<Edge*> Vertex::getAdj() const {
-    return this->adj;
+    return adj_;
 }
 
 bool Vertex::isVisited() const {
-    return this->visited;
+    return visited_;
 }
 
 
 bool Vertex::isProcessing() const {
-    return this->processing;
+    return processing_;
 }
 
 Edge *Vertex::getPath() const {
-    return this->path;
+    return path_;
+}
+
+Edge *Vertex::getPathToStart() const {
+    return pathToStart_;
 }
 
 void Vertex::setVisited(bool visited) {
-    this->visited = visited;
+    visited_ = visited;
 }
 
 void Vertex::setProcessing(bool processing) {
-    this->processing = processing;
+    processing_ = processing;
 }
 
 void Vertex::setPath(Edge *path) {
-    this->path = path;
+    path_ = path;
 }
 
 void Vertex::deleteEdge(Edge *edge) {
     Vertex *dest = edge->getDest();
 
-    auto it = dest->adj.begin();
-    while (it != dest->adj.end()) {
-        if ((*it)->getOrig()->getId() == id) {
-            it = dest->adj.erase(it);
+    auto it = dest->adj_.begin();
+    while (it != dest->adj_.end()) {
+        if ((*it)->getOrig()->getId() == id_) {
+            it = dest->adj_.erase(it);
         }
         else {
             it++;
         }
     }
     delete edge;
+}
+
+void Vertex::setPathToStart(Edge *pathToStart) {
+    pathToStart_ = pathToStart;
 }
