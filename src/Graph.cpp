@@ -468,7 +468,8 @@ double **Graph::getCompleteDistMatrix() {
     return matrix;
 }
 
-void Graph::deleteMatrix(double **matrix) {
+template<class T>
+void Graph::deleteMatrix(T **matrix) {
     for (int i = 0; i < (int)vertexSet_.size(); i++)
         delete [] matrix[i];
     delete [] matrix;
@@ -548,4 +549,12 @@ void Graph::minWeightPerfectMatchingGreedy(const vector<Edge *> &sortedEdges) {
 
 double Graph::hamiltonianCircuitDfs(Vertex *vertex) {
 
+}
+
+bool **Graph::createSelectedMatrix() {
+    auto matrix = new bool*[vertexSet_.size()];
+    for (int i = 0; i < vertexSet_.size(); i++)
+        matrix[i] = new bool[vertexSet_.size()] { false };
+
+    return matrix;
 }

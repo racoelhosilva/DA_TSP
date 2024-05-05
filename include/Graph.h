@@ -75,7 +75,10 @@ private:
     static double haversineDistance(const Vertex *v1, const Vertex *v2);
     double **getDistMatrix();
     double **getCompleteDistMatrix();
-    void deleteMatrix(double **matrix);
+    bool **createSelectedMatrix();
+
+    template<class T>
+    void deleteMatrix(T **matrix);
 
     bool respectsTriangularInequality();
 
