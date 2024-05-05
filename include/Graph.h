@@ -77,6 +77,10 @@ private:
     double **getCompleteDistMatrix();
     void deleteMatrix(double **matrix);
 
+    bool respectsTriangularInequality();
+
+    void kruskal();
+
     std::vector<Vertex*> vertexSet_;
 };
 

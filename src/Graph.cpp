@@ -369,9 +369,9 @@ double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
 
 double **Graph::getDistMatrix() {
     auto matrix = new double*[vertexSet_.size()];
-    for (int i = 0; i < vertexSet_.size(); i++) {
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
-        for (int j = 0; j < vertexSet_.size(); j++)
+        for (int j = 0; j < (int)vertexSet_.size(); j++)
             matrix[i][j] = i == j ? 0 : numeric_limits<double>::infinity();
     }
     for (Vertex *orig: vertexSet_) {
@@ -385,9 +385,9 @@ double **Graph::getDistMatrix() {
 
 double **Graph::getCompleteDistMatrix() {
     auto matrix = new double*[vertexSet_.size()];
-    for (int i = 0; i < vertexSet_.size(); i++) {
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
-        for (int j = 0; j < vertexSet_.size(); j++)
+        for (int j = 0; j < (int)vertexSet_.size(); j++)
             matrix[i][j] = i != j ? 0 : numeric_limits<double>::quiet_NaN();
     }
     for (Vertex *orig: vertexSet_) {
@@ -396,8 +396,8 @@ double **Graph::getCompleteDistMatrix() {
             matrix[orig->getId()][dest->getId()] = edge->getWeight();
         }
     }
-    for (int i = 0; i < vertexSet_.size(); i++) {
-        for (int j = 0; j < vertexSet_.size(); j++) {
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
+        for (int j = 0; j < (int)vertexSet_.size(); j++) {
             if (matrix[i][j] == numeric_limits<double>::quiet_NaN())
                 matrix[i][j] = haversineDistance(findVertex(i), findVertex(j));
         }
@@ -406,9 +406,26 @@ double **Graph::getCompleteDistMatrix() {
 }
 
 void Graph::deleteMatrix(double **matrix) {
-    for (int i = 0; i < vertexSet_.size(); i++)
+    for (int i = 0; i < (int)vertexSet_.size(); i++)
         delete [] matrix[i];
     delete [] matrix;
+}
+
+bool Graph::respectsTriangularInequality() {
+    double **dist = getDistMatrix();
+    for (int w = 0; w < (int)vertexSet_.size(); w++) {
+        for (int v = 0; v < (int)vertexSet_.size(); v++) {
+            for (int u = 0; u < w; u++) {
+                if (dist[u][w] > dist[u][v] + dist[v][w]) {
+                    deleteMatrix(dist);
+                    return false;
+                }
+            }
+        }
+    }
+
+    deleteMatrix(dist);
+    return true;
 }
 
 
