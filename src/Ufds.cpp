@@ -10,7 +10,7 @@ Ufds::Ufds(int n) {
 }
 
 int Ufds::findSet(int i) {
-    if (path[i] != i) path[i] = findSet(i);
+    if (path[i] != i) path[i] = findSet(path[i]);
     return path[i];
 }
 

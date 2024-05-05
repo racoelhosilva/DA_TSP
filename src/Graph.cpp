@@ -236,15 +236,15 @@ double Graph::christofidesTsp(int startId) {
         }
     }
 
-    kruskal(edges);
+    copy->kruskal(edges);
     for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(vertex->getDegree() % 2 == 0);
-    minWeightPerfectMatchingGreedy(edges);
+    copy->minWeightPerfectMatchingGreedy(edges);
 
     for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(false);
-    Vertex *root = copy->vertexSet_[0], *last = root;
-    double res = hamiltonianCircuitDfs(root, last);
+    Vertex *root = copy->findVertex(0), *last = root;
+    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(0)->getWeight();
 
     delete copy;
     return res;
@@ -455,7 +455,7 @@ double **Graph::getCompleteDistMatrix() const {
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
         for (int j = 0; j < (int)vertexSet_.size(); j++)
-            matrix[i][j] = i == j ? 0 : std::numeric_limits<double>::quiet_NaN();
+            matrix[i][j] = i == j ? 0 : numeric_limits<double>::quiet_NaN();
     }
     for (Vertex *orig: vertexSet_) {
         for (Edge *edge: orig->getAdj()) {
@@ -465,9 +465,8 @@ double **Graph::getCompleteDistMatrix() const {
     }
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         for (int j = 0; j < (int)vertexSet_.size(); j++) {
-            if (isnan(matrix[i][j])){
+            if (isnan(matrix[i][j]))
                 matrix[i][j] = haversineDistance(findVertex(i), findVertex(j));
-            }
         }
     }
     return matrix;
@@ -559,8 +558,9 @@ double Graph::hamiltonianCircuitDfs(Vertex *vertex, Vertex *&last) {
     for (Edge *edge: vertex->getAdj()) {
         Vertex *dest = edge->getDest();
         if (edge->isSelected() && !edge->getDest()->isVisited()) {
-            length += last->findEdgeTo(dest->getId())->getWeight() + hamiltonianCircuitDfs(dest, last);
-            break;
+            length += last->findEdgeTo(dest->getId())->getWeight();
+            last = dest;
+            length += hamiltonianCircuitDfs(dest, last);
         }
     }
 
