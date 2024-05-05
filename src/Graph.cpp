@@ -127,18 +127,7 @@ double Graph::heldKarpTsp(int startId) {
     if (numVertex > 64)
         return -1;  // Because we're using a 64-bit bitmask
 
-    auto dist = new double*[numVertex];
-    for (int i = 0; i < numVertex; i++) {
-        dist[i] = new double[numVertex];
-        for (int j = 0; j < numVertex; j++)
-            dist[i][j] = numeric_limits<double>::infinity();
-    }
-    for (Vertex *orig: vertexSet_) {
-        for (Edge *edge: orig->getAdj()) {
-            Vertex *dest = edge->getDest();
-            dist[orig->getId()][dest->getId()] = edge->getWeight();
-        }
-    }
+    auto dist = getDistMatrix();
 
     const uint64_t numSubsets = (uint64_t)1 << (numVertex - 2);
     auto dp = new double*[numVertex - 1];
@@ -177,9 +166,7 @@ double Graph::heldKarpTsp(int startId) {
         delete [] dp[i];
     delete [] dp;
 
-    for (int i = 0; i < numVertex; i++)
-        delete [] dist[i];
-    delete [] dist;
+    deleteMatrix(dist);
 
     return res;
 }
@@ -361,6 +348,10 @@ Graph *Graph::parseRealWorldGraph(const std::string &nodeFilename, const std::st
 }
 
 double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
+    if (isnan(v1->getLatitude()) || isnan(v1->getLongitude())
+        || isnan(v2->getLatitude()) || isnan(v2->getLongitude()))
+        return numeric_limits<double>::infinity();
+
     double dLat = (v2->getLatitude() - v1->getLatitude()) * M_PI / 180.0;
     double dLon = (v2->getLongitude() - v1->getLongitude()) * M_PI / 180.0;
 
@@ -375,3 +366,49 @@ double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
 
     return earthRadius * c;
 }
+
+double **Graph::getDistMatrix() {
+    auto matrix = new double*[vertexSet_.size()];
+    for (int i = 0; i < vertexSet_.size(); i++) {
+        matrix[i] = new double[vertexSet_.size()];
+        for (int j = 0; j < vertexSet_.size(); j++)
+            matrix[i][j] = i == j ? 0 : numeric_limits<double>::infinity();
+    }
+    for (Vertex *orig: vertexSet_) {
+        for (Edge *edge: orig->getAdj()) {
+            Vertex *dest = edge->getDest();
+            matrix[orig->getId()][dest->getId()] = edge->getWeight();
+        }
+    }
+    return matrix;
+}
+
+double **Graph::getCompleteDistMatrix() {
+    auto matrix = new double*[vertexSet_.size()];
+    for (int i = 0; i < vertexSet_.size(); i++) {
+        matrix[i] = new double[vertexSet_.size()];
+        for (int j = 0; j < vertexSet_.size(); j++)
+            matrix[i][j] = i != j ? 0 : numeric_limits<double>::quiet_NaN();
+    }
+    for (Vertex *orig: vertexSet_) {
+        for (Edge *edge: orig->getAdj()) {
+            Vertex *dest = edge->getDest();
+            matrix[orig->getId()][dest->getId()] = edge->getWeight();
+        }
+    }
+    for (int i = 0; i < vertexSet_.size(); i++) {
+        for (int j = 0; j < vertexSet_.size(); j++) {
+            if (matrix[i][j] == numeric_limits<double>::quiet_NaN())
+                matrix[i][j] = haversineDistance(findVertex(i), findVertex(j));
+        }
+    }
+    return matrix;
+}
+
+void Graph::deleteMatrix(double **matrix) {
+    for (int i = 0; i < vertexSet_.size(); i++)
+        delete [] matrix[i];
+    delete [] matrix;
+}
+
+

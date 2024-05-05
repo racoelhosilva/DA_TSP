@@ -71,9 +71,12 @@ public:
     static Graph *parseMediumGraph(const std::string &nodeFilename, const std::string &edgeFilename);
     static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
-    static double haversineDistance(const Vertex *v1, const Vertex *v2);
-
 private:
+    static double haversineDistance(const Vertex *v1, const Vertex *v2);
+    double **getDistMatrix();
+    double **getCompleteDistMatrix();
+    void deleteMatrix(double **matrix);
+
     std::vector<Vertex*> vertexSet_;
 };
 
