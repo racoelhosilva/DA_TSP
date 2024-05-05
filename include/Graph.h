@@ -73,12 +73,13 @@ public:
 
 private:
     static double haversineDistance(const Vertex *v1, const Vertex *v2);
-    double **getDistMatrix();
-    double **getCompleteDistMatrix();
-    bool **createSelectedMatrix();
+    double **getDistMatrix() const;
+    double **getCompleteDistMatrix() const;
 
     template<class T>
-    void deleteMatrix(T **matrix);
+    void deleteMatrix(T **matrix) const;
+
+    Graph *createCompleteCopy() const;
 
     bool respectsTriangularInequality();
 

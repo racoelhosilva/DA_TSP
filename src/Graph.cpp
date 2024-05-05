@@ -429,7 +429,7 @@ double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
     return earthRadius * c;
 }
 
-double **Graph::getDistMatrix() {
+double **Graph::getDistMatrix() const {
     auto matrix = new double*[vertexSet_.size()];
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
@@ -445,7 +445,7 @@ double **Graph::getDistMatrix() {
     return matrix;
 }
 
-double **Graph::getCompleteDistMatrix() {
+double **Graph::getCompleteDistMatrix() const {
     auto matrix = new double*[vertexSet_.size()];
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
@@ -469,7 +469,7 @@ double **Graph::getCompleteDistMatrix() {
 }
 
 template<class T>
-void Graph::deleteMatrix(T **matrix) {
+void Graph::deleteMatrix(T **matrix) const {
     for (int i = 0; i < (int)vertexSet_.size(); i++)
         delete [] matrix[i];
     delete [] matrix;
@@ -551,10 +551,27 @@ double Graph::hamiltonianCircuitDfs(Vertex *vertex) {
 
 }
 
-bool **Graph::createSelectedMatrix() {
-    auto matrix = new bool*[vertexSet_.size()];
-    for (int i = 0; i < vertexSet_.size(); i++)
-        matrix[i] = new bool[vertexSet_.size()] { false };
+Graph *Graph::createCompleteCopy() const {
+    auto newGraph = new Graph;
+    for (Vertex *vertex: vertexSet_)
+        newGraph->addVertex(new Vertex(vertex->getId(), vertex->getLatitude(), vertex->getLongitude()));
 
-    return matrix;
+    auto hasEdgeTo = new bool[vertexSet_.size()];
+    for (Vertex *vertex: vertexSet_) {
+        for (int id = vertex->getId() + 1; id < (int)vertexSet_.size(); id++)
+            hasEdgeTo[id] = false;
+        for (Edge *edge: vertex->getAdj()) {
+            if (edge->getDest()->getId() < vertex->getId())
+                continue;
+            newGraph->addEdge(vertex->getId(), edge->getDest()->getId(), edge->getWeight());
+            hasEdgeTo[edge->getDest()->getId()] = true;
+        }
+        for (int id = vertex->getId() + 1; id < (int)vertexSet_.size(); id++) {
+            if (!hasEdgeTo[id])
+                newGraph->addEdge(vertex->getId(), id, haversineDistance(vertex, findVertex(id)));
+        }
+    }
+
+    delete [] hasEdgeTo;
+    return newGraph;
 }
