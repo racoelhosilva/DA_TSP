@@ -109,7 +109,47 @@ double Graph::doubleMstTsp(int startId) {
 }
 
 double Graph::nearestNeighbourTsp(int startId) {
-    return 0.0;
+    Vertex *start = findVertex(startId);
+    if (start == nullptr)
+        return -1;
+
+    for (Vertex *vertex: vertexSet_) {
+        vertex->setVisited(false);
+        vertex->setPathToStart(nullptr);
+    }
+
+    double distance = 0.0;
+    Vertex *cur = start;
+
+    for (int operations = 0; operations < (int)vertexSet_.size()-1; operations++){
+
+        cur->setVisited(true);
+        double minDist = std::numeric_limits<double>::infinity();
+        Edge *bestPath = nullptr;
+
+        for (Edge *edge : cur->getAdj()){
+            if (edge->getWeight() >= minDist) continue;
+            if (edge->getDest()->isVisited()) continue;
+
+            minDist = edge->getWeight();
+            bestPath = edge;
+        }
+
+        if (bestPath == nullptr) {
+            return -1;
+        }
+
+        cur = bestPath->getDest();
+        distance += minDist;
+    }
+
+    for (const Edge *e : cur->getAdj()) {
+        if (e->getDest() == start) {
+            distance += e->getWeight();
+        }
+    }
+
+    return distance;
 }
 
 double Graph::christofidesTsp(int startId) {
