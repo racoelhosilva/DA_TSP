@@ -101,10 +101,6 @@ double Graph::backtrackingTsp(int startId) {
     return minDist;
 }
 
-double Graph::heldKarpTsp(int startId) {
-    return 0.0;
-}
-
 #ifdef __unix__
 #define TRAIL_ZERO(n) __builtin_ctz(n)
 #else
@@ -124,8 +120,8 @@ uint64_t subsetMask(uint64_t mask, int v) {
     return (mask & (((uint64_t)1 << v) - 1)) | ((mask & (UINT64_MAX << (v + 1))) >> 1);
 }
 
-double Graph::heldKarpTsp() {
-    int numVertex = (int) vertexSet.size();
+double Graph::heldKarpTsp(int startId) {
+    int numVertex = (int)vertexSet_.size();
     if (numVertex <= 1)
         return 0;
     if (numVertex > 64)
@@ -137,7 +133,7 @@ double Graph::heldKarpTsp() {
         for (int j = 0; j < numVertex; j++)
             dist[i][j] = numeric_limits<double>::infinity();
     }
-    for (Vertex *orig: vertexSet) {
+    for (Vertex *orig: vertexSet_) {
         for (Edge *edge: orig->getAdj()) {
             Vertex *dest = edge->getDest();
             dist[orig->getId()][dest->getId()] = edge->getWeight();
@@ -152,11 +148,11 @@ double Graph::heldKarpTsp() {
             dp[i][j] = numeric_limits<double>::infinity();
     }
 
-    const uint64_t maxMask = (uint64_t) 1 << (numVertex - 1);
+    const uint64_t maxMask = ((uint64_t)1 << (numVertex - 1)) - 1;
     uint64_t iMask, jMask;
     for (int i = 1; i < numVertex; i++)
         dp[i - 1][0] = dist[0][i];
-    for (int k = 2; k < numVertex - 1; k++) {
+    for (int k = 2; k < numVertex; k++) {
         for (uint64_t mask = initMask(k); mask <= maxMask; mask = nextMask(mask, k)) {
             int i = 0;
             for (uint64_t sel1 = mask; sel1 != 0; sel1 >>= (TRAIL_ZERO(sel1) + 1)) {
@@ -178,9 +174,8 @@ double Graph::heldKarpTsp() {
         res = min(res, dp[i - 1][initMask(numVertex - 2)] + dist[i][0]);
 
     for (int i = 0; i < numVertex - 1; i++)
-        delete[] dp[i];
-
-    delete[] dp;
+        delete [] dp[i];
+    delete [] dp;
 
     for (int i = 0; i < numVertex; i++)
         delete[] dist[i];
