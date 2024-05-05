@@ -79,6 +79,7 @@ private:
 
     bool respectsTriangularInequality();
 
+    void kruskalDfs();
     void kruskal();
 
     std::vector<Vertex*> vertexSet_;

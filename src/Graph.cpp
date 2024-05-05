@@ -468,4 +468,11 @@ bool Graph::respectsTriangularInequality() {
     return true;
 }
 
+void Graph::kruskal() {
+    if (vertexSet_.empty())
+        return;
+
+
+}
+
 
