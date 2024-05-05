@@ -213,6 +213,8 @@ double Graph::nearestNeighbourTsp(int startId) {
     }
     distance += dist[cur->getId()][startId];
 
+    deleteMatrix(dist);
+
     return distance;
 }
 
