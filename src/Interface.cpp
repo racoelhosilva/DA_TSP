@@ -81,7 +81,7 @@ void Interface::printDatasetsOptions(const vector<std::string> &options, int cho
 void Interface::printAlgorithmOptions(const vector<std::string> &options, int choice){
     std::cout << "│" << std::string(4, ' ') << std::setw(74) << std::left << options[options.size()-1] << "│" << '\n';
 
-    for (int idx = 1; idx < (int)options.size() - 2; idx++){
+    for (int idx = 1; idx < 3; idx++){
         int space = 73;
         if (idx >= 10){
             space--;
@@ -93,17 +93,33 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
             std::cout << "│" << GREEN << " [" << idx << "] " << RESET << FAINT << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
         }
     }
+    for (int idx = 3; idx < (int)options.size() - 3; idx++){
+        int space = 73;
+        if (idx >= 10){
+            space--;
+        }
+        if (choice == idx){
+            std::cout << "│" << BOLD << YELLOW << " [" << idx << "] " << RESET << BOLD << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
+        }
+        else {
+            std::cout << "│" << YELLOW << " [" << idx << "] " << RESET << FAINT << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
+        }
+    }
 
     int space = 73;
-    if (options.size() - 2 >= 10){
-        space--;
+
+    if (choice == (int)options.size()-3){
+        std::cout << "│" << BOLD << MAGENTA << " [" << options.size()-3 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-3] << RESET "│" << '\n';
+    }
+    else {
+        std::cout << "│" << MAGENTA << " [" << options.size()-3 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-3] << RESET << "│" << '\n';
     }
 
     if (choice == (int)options.size()-2){
-        std::cout << "│" << BOLD << YELLOW << " [" << options.size()-2 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-2] << RESET "│" << '\n';
+        std::cout << "│" << BOLD << BLUE << " [" << options.size()-2 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-2] << RESET "│" << '\n';
     }
     else {
-        std::cout << "│" << YELLOW << " [" << options.size()-2 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-2] << RESET << "│" << '\n';
+        std::cout << "│" << BLUE << " [" << options.size()-2 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-2] << RESET << "│" << '\n';
     }
 
     if (choice == 0){
@@ -125,7 +141,6 @@ void Interface::mainMenu() {
              "Nearest Neighbour Heuristic",
              "Christofides* Heuristic",
              "Real World Heuristic",
-             "Print Graph",
              "Statistics",
              "Choose your operation:"
             };
@@ -191,19 +206,6 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
-            for (Vertex *v: graph->getVertexSet()) {
-                cout << v->getId() << ": ";
-                for (auto e: v->getAdj()) {
-                    cout << e->getDest()->getId() << '(' << e->getWeight() << ')' << ' ';
-                }
-                cout << '\n';
-            }
-
-            cout << graph->getNumEdges() << '\n';
-            waitInput();
-            return;
-        }
-        case 8: {
             statistics();
             waitInput();
             return;
@@ -214,8 +216,8 @@ void Interface::mainMenu() {
     }
 
     std::chrono::duration<double> execution = end - start;
-    cout << "Result: " << fixed << setprecision(3) << result << '\n';
-    cout << "Execution: " << fixed << setprecision(10) << execution.count() << '\n';
+    cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
+    cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
     waitInput();
 }
 
