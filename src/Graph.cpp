@@ -185,6 +185,8 @@ double Graph::nearestNeighbourTsp(int startId) {
         vertex->setPathToStart(nullptr);
     }
 
+    auto dist = getDistMatrix();
+
     double distance = 0.0;
     Vertex *cur = start;
 
@@ -192,29 +194,24 @@ double Graph::nearestNeighbourTsp(int startId) {
 
         cur->setVisited(true);
         double minDist = std::numeric_limits<double>::infinity();
-        Edge *bestPath = nullptr;
+        Vertex *dest = nullptr;
 
-        for (Edge *edge : cur->getAdj()){
-            if (edge->getWeight() >= minDist) continue;
-            if (edge->getDest()->isVisited()) continue;
+        for (Vertex *vertex : vertexSet_){
+            if (vertex->isVisited()) continue;
+            if (dist[vertex->getId()][cur->getId()] >= minDist) continue;
 
-            minDist = edge->getWeight();
-            bestPath = edge;
+            minDist = dist[cur->getId()][vertex->getId()];
+            dest = vertex;
         }
 
-        if (bestPath == nullptr) {
+        if (dest == nullptr) {
             return -1;
         }
 
-        cur = bestPath->getDest();
+        cur = dest;
         distance += minDist;
     }
-
-    for (const Edge *e : cur->getAdj()) {
-        if (e->getDest() == start) {
-            distance += e->getWeight();
-        }
-    }
+    distance += dist[cur->getId()][startId];
 
     return distance;
 }
