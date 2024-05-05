@@ -62,6 +62,8 @@ public:
 
     int getDegree() const;
 
+    Edge *findEdgeTo(int destId) const;
+
     /**
      * @brief Sets if the vertex has been visited
      * @param visited Whether the vertex was visited or not

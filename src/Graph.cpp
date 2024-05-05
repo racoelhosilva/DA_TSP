@@ -225,9 +225,11 @@ double Graph::christofidesTsp(int startId) {
     if (vertexSet_.empty())
         return 0;
 
+    Graph *copy = createCompleteCopy();
+
     vector<Edge*> edges;
-    edges.reserve(vertexSet_.size() * vertexSet_.size());
-    for (Vertex *v: vertexSet_) {
+    edges.reserve(copy->vertexSet_.size() * copy->vertexSet_.size());
+    for (Vertex *v: copy->vertexSet_) {
         for (Edge *edge: v->getAdj()) {
             edges.push_back(edge);
             edge->setSelected(false);
@@ -235,14 +237,17 @@ double Graph::christofidesTsp(int startId) {
     }
 
     kruskal(edges);
-    for (Vertex *vertex: vertexSet_)
+    for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(vertex->getDegree() % 2 == 0);
     minWeightPerfectMatchingGreedy(edges);
 
-    for (Vertex *vertex: vertexSet_)
+    for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(false);
-    Vertex *root = vertexSet_[0];
-    return hamiltonianCircuitDfs(root);
+    Vertex *root = copy->vertexSet_[0], *last = root;
+    double res = hamiltonianCircuitDfs(root, last);
+
+    delete copy;
+    return res;
 }
 
 double Graph::realWorldTsp(int startId) {
@@ -547,8 +552,19 @@ void Graph::minWeightPerfectMatchingGreedy(const vector<Edge *> &sortedEdges) {
     }
 }
 
-double Graph::hamiltonianCircuitDfs(Vertex *vertex) {
+double Graph::hamiltonianCircuitDfs(Vertex *vertex, Vertex *&last) {
+    double length = 0;
+    vertex->setVisited(true);
 
+    for (Edge *edge: vertex->getAdj()) {
+        Vertex *dest = edge->getDest();
+        if (edge->isSelected() && !edge->getDest()->isVisited()) {
+            length += last->findEdgeTo(dest->getId())->getWeight() + hamiltonianCircuitDfs(dest, last);
+            break;
+        }
+    }
+
+    return length;
 }
 
 Graph *Graph::createCompleteCopy() const {
