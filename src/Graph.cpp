@@ -89,6 +89,7 @@ double Graph::backtrackingTsp(int startId) {
 
     for (Vertex *vertex: vertexSet_) {
         vertex->setVisited(false);
+        vertex->setPath(nullptr);
         vertex->setPathToStart(nullptr);
     }
 
@@ -221,7 +222,27 @@ double Graph::nearestNeighbourTsp(int startId) {
 }
 
 double Graph::christofidesTsp(int startId) {
-    return 0.0;
+    if (vertexSet_.empty())
+        return 0;
+
+    vector<Edge*> edges;
+    edges.reserve(vertexSet_.size() * vertexSet_.size());
+    for (Vertex *v: vertexSet_) {
+        for (Edge *edge: v->getAdj()) {
+            edges.push_back(edge);
+            edge->setSelected(false);
+        }
+    }
+
+    kruskal(edges);
+    for (Vertex *vertex: vertexSet_)
+        vertex->setVisited(vertex->getDegree() % 2 == 0);
+    minWeightPerfectMatchingGreedy(edges);
+
+    for (Vertex *vertex: vertexSet_)
+        vertex->setVisited(false);
+    Vertex *root = vertexSet_[0];
+    return hamiltonianCircuitDfs(root);
 }
 
 double Graph::realWorldTsp(int startId) {
@@ -488,10 +509,13 @@ void Graph::kruskal(std::vector<Edge*> &edges) {
         }
     }
 
-    for (Vertex *vertex: vertexSet_)
+    for (Vertex *vertex: vertexSet_) {
         vertex->setVisited(false);
+        vertex->setDegree(0);
+        vertex->setPath(nullptr);
+    }
+
     Vertex *root = vertexSet_[0];
-    root->setPath(nullptr);
     kruskalDfs(root);
 }
 
@@ -504,6 +528,8 @@ void Graph::kruskalDfs(Vertex *v) {
         Vertex *w = e->getDest();
         if (!w->isVisited()) {
             w->setPath(e->getReverse());
+            v->setDegree(v->getDegree() + 1);
+            w->setDegree(w->getDegree() + 1);
             kruskalDfs(w);
         }
     }
@@ -518,4 +544,8 @@ void Graph::minWeightPerfectMatchingGreedy(const vector<Edge *> &sortedEdges) {
         u->setVisited(true);
         v->setVisited(true);
     }
+}
+
+double Graph::hamiltonianCircuitDfs(Vertex *vertex) {
+
 }
