@@ -6,6 +6,12 @@
 #include <cmath>
 #include "Graph.h"
 
+struct Statistic {
+    std::string algorithm;
+    double result;
+    double time;
+};
+
 /**
  * @brief Class that represents the interface of the program
  */
@@ -79,6 +85,8 @@ private:
     int infoSpacing = 8;
     int width = 80;
     Graph* graph = nullptr;
+
+    std::vector<Statistic> stats;
 
     std::pair<double, double> backtrackResult = {NAN, NAN};
     std::pair<double, double> heldKarpResult = {NAN, NAN};

@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <cmath>
 #include <chrono>
+#include <algorithm>
 
 using namespace std;
 
@@ -161,55 +162,62 @@ void Interface::mainMenu() {
     endCapture();
 
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-    std::chrono::duration<double> execution;
+    std::chrono::duration<double> execution{};
     double result = NAN;
+    std::string title;
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
             result = graph->backtrackingTsp(0);
             end = chrono::high_resolution_clock::now();
+            title = "Backtracking";
             execution = end - start;
-            backtrackResult = {result, execution.count()};
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 2: {
             start = chrono::high_resolution_clock::now();
             result = graph->heldKarpTsp(0);
             end = chrono::high_resolution_clock::now();
+            title = "Held-Karp";
             execution = end - start;
-            heldKarpResult = {result, execution.count()};
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 3: {
             start = chrono::high_resolution_clock::now();
             result = graph->doubleMstTsp(0);
             end = chrono::high_resolution_clock::now();
+            title = "Double MST";
             execution = end - start;
-            doubleMSTResult = {result, execution.count()};
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 4: {
             start = chrono::high_resolution_clock::now();
             result = graph->nearestNeighbourTsp(0);
             end = chrono::high_resolution_clock::now();
+            title = "Nearest Neighbor";
             execution = end - start;
-            nearestNeighborResult = {result, execution.count()};
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 5: {
             start = chrono::high_resolution_clock::now();
             result = graph->christofidesTsp(0);
             end = chrono::high_resolution_clock::now();
+            title = "Christofides*";
             execution = end - start;
-            christofidesResult = {result, execution.count()};
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 6: {
             start = chrono::high_resolution_clock::now();
             result = graph->realWorldTsp(0);
             end = chrono::high_resolution_clock::now();
+            title = "Real World";
             execution = end - start;
-            realWorldResult = {result, execution.count()};
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 7: {
@@ -222,6 +230,7 @@ void Interface::mainMenu() {
             break;
     }
 
+    cout << BOLD << MAGENTA << string(15, ' ') << title << RESET << '\n';
     cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
     cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
     waitInput();
@@ -388,12 +397,11 @@ void Interface::toyMenu() {
 }
 
 void Interface::statistics() {
-    if (!isnan(backtrackResult.first)) cout << "Backtrack: " << backtrackResult.first << ' ' << backtrackResult.second << '\n';
-    if (!isnan(heldKarpResult.first)) cout << "Held-Karp: " << heldKarpResult.first << ' ' << heldKarpResult.second << '\n';
-    if (!isnan(doubleMSTResult.first)) cout << "Double MST: " << doubleMSTResult.first << ' ' << doubleMSTResult.second << '\n';
-    if (!isnan(nearestNeighborResult.first)) cout << "Nearest Neighbor: " << nearestNeighborResult.first << ' ' << nearestNeighborResult.second << '\n';
-    if (!isnan(christofidesResult.first)) cout << "Christofides*: " << christofidesResult.first << ' ' << christofidesResult.second << '\n';
-    if (!isnan(realWorldResult.first)) cout << "Real World: " << realWorldResult.first << ' ' << realWorldResult.second << '\n';
+    std::sort(stats.begin(), stats.end(),
+              [](const Statistic& s1, const Statistic& s2){return s1.result < s2.result || (s1.result == s2.result && s1.time < s2.time);});
+    for (const Statistic& s : stats){
+        cout << setw(40) << s.algorithm << setprecision(3) << setw(15) << s.result << setprecision(10) << setw(15) << s.time << '\n';
+    }
 }
 
 void Interface::exitMenu() {
