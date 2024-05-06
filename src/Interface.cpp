@@ -12,6 +12,7 @@ using namespace std;
 bool Interface::init(){
     categoryMenu();
     if (graph == nullptr){
+        cout << "Error reading the dataset files!\n";
         return false;
     }
     clearScreen();
