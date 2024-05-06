@@ -214,8 +214,8 @@ void Interface::mainMenu() {
     }
 
     std::chrono::duration<double> execution = end - start;
-    cout << "Result: " << result << '\n';
-    cout << "Execution: " << execution.count() << '\n';
+    cout << "Result: " << fixed << setprecision(3) << result << '\n';
+    cout << "Execution: " << fixed << setprecision(10) << execution.count() << '\n';
     waitInput();
 }
 
