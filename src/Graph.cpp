@@ -3,8 +3,12 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdint>
+
+#define TRAIL_ZERO(n) __builtin_ctz(n)
 
 using namespace std;
 
@@ -100,12 +104,6 @@ double Graph::backtrackingTsp(int startId) {
     backtrackingTspAux(start, (int)vertexSet_.size() - 1, 0, minDist);
     return minDist;
 }
-
-#ifdef __unix__
-#define TRAIL_ZERO(n) __builtin_ctz(n)
-#else
-#define TRAIL_ZERO(n) _BitScanForward(n)
-#endif
 
 uint64_t initMask(int k) {
     return ((uint64_t)1 << k) - 1;
