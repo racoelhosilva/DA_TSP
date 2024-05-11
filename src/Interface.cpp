@@ -57,6 +57,27 @@ void Interface::waitInput() {
     endCapture();
 }
 
+int Interface::receiveVertexId() {
+    int id;
+
+    std::cout << FAINT << "Starting Vertex (0-" << graph->getVertexSet().size()-1 << "): " << RESET;
+
+    cin >> id;
+    while (!cin || graph->findVertex(id) == nullptr) {
+        cout << BOLD << RED << "│ Invalid Vertex ID │ " << RESET;
+        std::cout << FAINT << "Starting Vertex (0-" << graph->getVertexSet().size()-1 << "): " << RESET;
+        if (!cin) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        cin >> id;
+    }
+    cout << '\n';
+    getNextPress(); // Skip enter
+
+    return 0;
+}
+
 void Interface::printDatasetsOptions(const vector<std::string> &options, int choice){
     std::cout << "│" << std::string(4, ' ') << std::setw(74) << std::left << options[options.size()-1] << "│" << '\n';
 
@@ -95,7 +116,7 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
             std::cout << "│" << GREEN << " [" << idx << "] " << RESET << FAINT << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
         }
     }
-    for (int idx = 3; idx < (int)options.size() - 3; idx++){
+    for (int idx = 3; idx < (int)options.size() - 4; idx++){
         int space = 73;
         if (idx >= 10){
             space--;
@@ -110,11 +131,18 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
 
     int space = 73;
 
-    if (choice == (int)options.size()-3){
-        std::cout << "│" << BOLD << MAGENTA << " [" << options.size()-3 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-3] << RESET "│" << '\n';
+    if (choice == (int)options.size()-4){
+        std::cout << "│" << BOLD << MAGENTA << " [" << options.size()-4 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-4] << RESET "│" << '\n';
     }
     else {
-        std::cout << "│" << MAGENTA << " [" << options.size()-3 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-3] << RESET << "│" << '\n';
+        std::cout << "│" << MAGENTA << " [" << options.size()-4 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-4] << RESET << "│" << '\n';
+    }
+
+    if (choice == (int)options.size()-3){
+        std::cout << "│" << BOLD << CYAN << " [" << options.size()-3 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-3] << RESET "│" << '\n';
+    }
+    else {
+        std::cout << "│" << CYAN << " [" << options.size()-3 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-3] << RESET << "│" << '\n';
     }
 
     if (choice == (int)options.size()-2){
@@ -130,24 +158,6 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
     else {
         std::cout << "│" << RED << " [0] " << RESET << FAINT << std::setw(73) << std::left << options[0] << RESET << "│" << '\n';
     }
-}
-
-int Interface::receiveVertexId() {
-    int id;
-    cout << "Enter the starting vertex id: ";
-    cin >> id;
-    while (!cin || graph->findVertex(id) == nullptr) {
-        cout << "Invalid vertex id. Please enter a valid one: ";
-        if (!cin) {
-            cin.clear();
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        cin >> id;
-    }
-    cout << '\n';
-    getNextPress(); // Skip enter
-
-    return 0;
 }
 
 void Interface::mainMenu() {
@@ -270,6 +280,7 @@ void Interface::mainMenu() {
             start = chrono::high_resolution_clock::now();
             result = (graph->*algorithm)(0);
             end = chrono::high_resolution_clock::now();
+            execution = end - start;
             break;
         }
         case 8: {
@@ -282,11 +293,10 @@ void Interface::mainMenu() {
             break;
     }
 
-    std::chrono::duration<double> execution = end - start;
     if (result > 0 && !isinf(result) && !isnan(result))
-        cout << "Result: " << fixed << setprecision(3) << result << '\n';
+        cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << '\n';
     else
-        cout << BOLD << BLUE << "No results found.\n" << RESET << '\n';
+        cout << BOLD << BLUE << FAINT << "No results found" << RESET << '\n';
     cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
     waitInput();
 }
