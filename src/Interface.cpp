@@ -150,14 +150,14 @@ void Interface::mainMenu() {
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
-            result = graph->backtrackingTsp(0);
+            result = graph->backtrackingTsp();
             end = chrono::high_resolution_clock::now();
             backtrackResult = result;
             break;
         }
         case 2: {
             start = chrono::high_resolution_clock::now();
-            result = graph->heldKarpTsp(0);
+            result = graph->heldKarpTsp();
             end = chrono::high_resolution_clock::now();
             heldKarpResult = result;
             break;

@@ -110,20 +110,99 @@ public:
     static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
 private:
+    /**
+     * @brief Calculates the distance between two vertices using the haversine distance formula
+     * @param v1 The first vertex
+     * @param v2 The second vertex
+     * @details Complexity: O(1) (assuming the functions std::sin, std::cos, std::sqrt and std::atan2 are O(1)).
+     * @return Haversine distance between the two vertices
+     */
     static double haversineDistance(const Vertex *v1, const Vertex *v2);
+
+    /**
+     * @brief Returns the matrix representation of the graph
+     * @details The matrix returned is a |V| x |V| matrix (w_ij), where w_ij is the weight of the edge that goes from
+     * the vertex with index i to the vertex with index j. If there is no edge between the vertices, w_ij is set to
+     * infinity. The matrix is stored as a dynamically allocated 2D double array, so it must be freed (e.g. using
+     * deleteMatrix) after being used. Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @return Matrix representation of the graph
+     */
     double **getDistMatrix() const;
+
+    /**
+     * @brief Returns the complete matrix representation of the graph
+     * @details The matrix returned is a |V| x |V| matrix (w_ij), where w_ij is the weight of the edge that goes from
+     * the vertex with index i to the vertex with index j. If there is no edge between the vertices, w_ij is set to
+     * the haversine distance between the two vertices. The matrix is stored as a dynamically allocated 2D double array,
+     * so it must be freed (e.g. using deleteMatrix) after being used. Complexity: O(V^2), where V is the number of
+     * vertices in the graph.
+     * @return Complete matrix representation of the graph
+     */
     double **getCompleteDistMatrix() const;
 
+    /**
+     * @brief Frees a dynamically allocated 2D square matrix, with side n
+     * @tparam T Type of the matrix elements
+     * @param matrix Matrix to be freed from memory
+     * @param n Side of the square matrix
+     * @details Complexity: O(n^2).
+     */
     template<class T>
-    void deleteMatrix(T **matrix) const;
+    static void deleteMatrix(T **matrix, int n);
 
+    /**
+     * @brief Creates a fully connected copy of the graph
+     * @details If there is no edge between two vertices, one edge with the haversine distance as the weight is added.
+     * Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @return Complete copy of the graph
+     */
     Graph *createCompleteCopy() const;
 
+    /**
+     * @brief Checks if all the edges in the graph respect the triangular inequality
+     * @details The triangular inequality states that, for any three vertices u, v and w, c(u, w) <= c(u, v) + c(v, w).
+     * Complexity: O(V^3), where V is the number of vertices in the graph.
+     * @return True if all the edges respect the triangular inequality, and false otherwise
+     */
     bool respectsTriangularInequality();
 
+    /**
+     * @brief Auxiliary function to the Kruskal algorithm, performing a depth-first search through the selected edges,
+     * from a specified vertex, to find a minimum spanning tree and updating the graph accordingly
+     * @details Complexity: O(V), where V is the number of vertices (the number of selected undirected edges in the
+     * kruskal will always be V-1).
+     * @param vertex The vertex to start the depth-first search
+     */
     void kruskalDfs(Vertex *vertex);
+
+    /**
+     * @brief Performs the Kruskal algorithm to find the minimum spanning tree of a connected graph
+     * @details It also sorts the vector of edges received in ascending order of weight. The MST is recorded in the path
+     * edges of the vertices. Complexity: O(E log V), where E is the number of edges in the graph and V is the number of
+     * vertices.
+     * @param edges Vector with the edges of the graph
+     */
     void kruskal(std::vector<Edge*> &edges);
+
+    /**
+     * @brief Calculates an approximated minimum weight perfect matching of the unvisited vertices, using a greedy
+     * heuristic
+     * @details This approach chooses the smallest edge available at each step, until no more edges that match two
+     * unmatched vertices are left. The edges of the matching are set as selected. Complexity: O(E), where E is the
+     * number of edges.
+     * @param sortedEdges Vector of edges, sorted in ascending order of weight
+     */
     void minWeightPerfectMatchingGreedy(const std::vector<Edge*> &sortedEdges);
+
+    /**
+     * @brief Performs a DFS to find a hamiltonian circuit of a complete graph, by connecting the vertices in pre-order.
+     * @details The DFS is performed using only the selected edges of the graph. Complexity: O(V+E), where V is the
+     * number of vertices in the graph and E is the number of edges. In the case of the call in the christofidesTsp, the
+     * complexity is O(V), as the number of selected edges will be, at most, 3V/2.
+     * @param vertex The vertex to start the DFS
+     * @param last The last vertex visited in the DFS
+     * @return The cost of the hamiltonian circuit found
+     */
     double hamiltonianCircuitDfs(Vertex *vertex, Vertex *&last);
 
     std::vector<Vertex*> vertexSet_;

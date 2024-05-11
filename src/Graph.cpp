@@ -167,7 +167,7 @@ double Graph::heldKarpTsp() {
         delete [] dp[i];
     delete [] dp;
 
-    deleteMatrix(dist);
+    deleteMatrix(dist, numVertex);
 
     return res;
 }
@@ -214,7 +214,7 @@ double Graph::nearestNeighbourTsp(int startId) {
     }
     distance += dist[cur->getId()][startId];
 
-    deleteMatrix(dist);
+    deleteMatrix(dist, (int)vertexSet_.size());
 
     return distance;
 }
@@ -408,6 +408,10 @@ Graph *Graph::parseRealWorldGraph(const std::string &nodeFilename, const std::st
     return graph;
 }
 
+double sqr(double x) {
+    return x * x;
+}
+
 double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
     if (isnan(v1->getLatitude()) || isnan(v1->getLongitude())
         || isnan(v2->getLatitude()) || isnan(v2->getLongitude()))
@@ -421,9 +425,9 @@ double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
     double lat2 = (v2->getLatitude()) * M_PI / 180.0;
 
     // apply formula
-    double a = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1) * cos(lat2);
+    double a = sqr(sin(dLat / 2)) + sqr(sin(dLon / 2)) * cos(lat1) * cos(lat2);
     double earthRadius = 6371000;
-    double c = 2 * asin(sqrt(a));
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
     return earthRadius * c;
 }
@@ -467,8 +471,8 @@ double **Graph::getCompleteDistMatrix() const {
 }
 
 template<class T>
-void Graph::deleteMatrix(T **matrix) const {
-    for (int i = 0; i < (int)vertexSet_.size(); i++)
+void Graph::deleteMatrix(T **matrix, int n) {
+    for (int i = 0; i < n; i++)
         delete [] matrix[i];
     delete [] matrix;
 }
@@ -479,14 +483,14 @@ bool Graph::respectsTriangularInequality() {
         for (int v = 0; v < (int)vertexSet_.size(); v++) {
             for (int u = 0; u < w; u++) {
                 if (dist[u][w] > dist[u][v] + dist[v][w]) {
-                    deleteMatrix(dist);
+                    deleteMatrix(dist, (int)vertexSet_.size());
                     return false;
                 }
             }
         }
     }
 
-    deleteMatrix(dist);
+    deleteMatrix(dist, (int)vertexSet_.size());
     return true;
 }
 
