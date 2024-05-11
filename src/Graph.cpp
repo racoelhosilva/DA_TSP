@@ -86,8 +86,8 @@ void backtrackingTspAux(Vertex* curr, int verticesLeft, double currDist, double 
     curr->setVisited(false);
 }
 
-double Graph::backtrackingTsp(int startId) {
-    Vertex *start = findVertex(startId);
+double Graph::backtrackingTsp() {
+    Vertex *start = findVertex(0);
     if (start == nullptr)
         return -1;
 
@@ -121,7 +121,7 @@ uint64_t subsetMask(uint64_t mask, int v) {
     return (mask & (((uint64_t)1 << v) - 1)) | ((mask & (UINT64_MAX << (v + 1))) >> 1);
 }
 
-double Graph::heldKarpTsp(int startId) {
+double Graph::heldKarpTsp() {
     int numVertex = (int)vertexSet_.size();
     if (numVertex <= 1)
         return 0;
@@ -241,7 +241,7 @@ double Graph::christofidesTsp(int startId) {
 
     for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(false);
-    Vertex *root = copy->findVertex(0), *last = root;
+    Vertex *root = copy->findVertex(startId), *last = root;
     double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(0)->getWeight();
 
     delete copy;
@@ -250,10 +250,6 @@ double Graph::christofidesTsp(int startId) {
 
 double Graph::realWorldTsp(int startId) {
     return 0.0;
-}
-
-Graph * Graph::parse(const std::string& edgeFilename, const std::string& nodeFilename){
-    return new Graph;
 }
 
 Graph *Graph::parseToyGraph(const std::string& edgeFilename) {

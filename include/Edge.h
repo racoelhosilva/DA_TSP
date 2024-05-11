@@ -8,7 +8,6 @@ class Vertex;
 
 /**
  * @brief Class that represents an edge in a graph
- * @tparam T Type of the info of the vertices that the edge connects
  */
 class Edge {
 public:

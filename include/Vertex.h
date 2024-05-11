@@ -8,8 +8,7 @@
 class Edge;
 
 /**
- * @brief Class that represents a vertex
- * @tparam T Type of the vertex's info
+ * @brief Class that represents a vertex in a graph
  */
 class Vertex {
 public:
@@ -82,7 +81,7 @@ public:
 
     /**
      * @brief Returns the edge that connects this vertex to the destination vertex
-     * Complexity: O(E), where E is the number of outgoing edges of the vertex
+     * @details Complexity: O(E), where E is the number of outgoing edges of the vertex
      * @param destId The destination vertex's id
      * @return The edge that connects this vertex to the destination vertex, or nullptr if it does not exist
      */
@@ -119,8 +118,8 @@ public:
     void setDegree(int degree);
 
     /**
-     * @brief Adds an outgoing edge from this vertex to dest, and the same edge as an incoming edge of dest
-     * Complexity: O(1).
+     * @brief Adds an outgoing edge from this vertex to dest
+     * @details Complexity: O(1).
      * @param dest Destination of the pipe
      * @param w Edge's weight
      * @return Pointer to the newly created edge
