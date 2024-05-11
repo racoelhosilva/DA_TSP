@@ -62,7 +62,7 @@ public:
     double heldKarpTsp(int startId);
     double doubleMstTsp(int startId);
     double nearestNeighbourTsp(int startId);
-    double christofidesTsp(int startId);
+    double christofidesStarTsp(int startId);
     double realWorldTsp(int startId);
 
     static Graph * parse(const std::string &edgeFilename = "", const std::string &nodeFilename = "");

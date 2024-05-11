@@ -241,7 +241,7 @@ void Interface::mainMenu() {
         }
         case 5: {
             start = chrono::high_resolution_clock::now();
-            result = graph->christofidesTsp(0);
+            result = graph->christofidesStarTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Christofides*";
             execution = end - start;
@@ -322,6 +322,7 @@ void Interface::categoryMenu() {
              "Extra Fully Connected Graphs",
              "Real World Graphs",
              "Toy Graphs",
+             "Custom dataset (see README)",
              "Choose the Dataset"
             };
 
@@ -344,6 +345,9 @@ void Interface::categoryMenu() {
         case 1: extraFullyConnectedMenu(); break;
         case 2: realWorldMenu(); break;
         case 3: toyMenu(); break;
+        case 4:
+            graph = Graph::parseRealWorldGraph("../graphs/Custom/nodes.csv", "../graphs/Custom/edges.csv");
+            break;
         default:
             exitMenu();
     }
