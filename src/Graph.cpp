@@ -291,7 +291,7 @@ double Graph::realWorldTsp(int startId) {
 
     auto *auxGraph = createAuxGraph(dist);
 
-    double totalDistance = auxGraph->christofidesTsp(startId);
+    double totalDistance = auxGraph->christofidesStarTsp(startId);
 
     deleteMatrix(dist);
     delete auxGraph;
