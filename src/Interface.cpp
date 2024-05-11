@@ -143,6 +143,7 @@ void Interface::mainMenu() {
              "Nearest Neighbour Heuristic",
              "Christofides* Heuristic",
              "Real World Heuristic",
+             "Choose Best Algorithm",
              "Statistics",
              "Choose your operation:"
             };
@@ -166,6 +167,8 @@ void Interface::mainMenu() {
     std::chrono::duration<double> execution{};
     double result = NAN;
     std::string title;
+    double (Graph::*algorithm)(int);
+    int numVertices, numEdges;
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
@@ -222,6 +225,28 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
+            numVertices = (int)graph->getVertexSet().size();
+            numEdges = graph->getNumEdges();
+            if (numVertices < 25) {
+                cout << "No of vertices < 25, choosing Held-Karp algorithm\n";
+                algorithm = &Graph::heldKarpTsp;
+            } else if (numEdges < (numVertices - 1) * numVertices / 2) {
+                cout << "No of vertices >= 25 and graph is not fully connected, choosing Real World heuristic\n";
+                algorithm = &Graph::realWorldTsp;
+            } else if (numVertices < 1000) {
+                cout << "25 <= no of vertices < 1000 and graph is fully connected, choosing Christofides* heuristic\n";
+                algorithm = &Graph::christofidesTsp;
+            } else {
+                cout << "No of vertices >= 1000 and graph is fully connected, choosing Nearest Neighbor heuristic\n";
+                algorithm = &Graph::nearestNeighbourTsp;
+            }
+
+            start = chrono::high_resolution_clock::now();
+            result = (graph->*algorithm)(0);
+            end = chrono::high_resolution_clock::now();
+            break;
+        }
+        case 8: {
             statistics();
             waitInput();
             return;

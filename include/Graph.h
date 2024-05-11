@@ -71,6 +71,7 @@ public:
     static Graph *parseMediumGraph(const std::string &nodeFilename, const std::string &edgeFilename);
     static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
+    bool respectsTriangularInequality();
 private:
     static double haversineDistance(const Vertex *v1, const Vertex *v2);
     double **getDistMatrix() const;
@@ -80,8 +81,6 @@ private:
     void deleteMatrix(T **matrix) const;
 
     Graph *createCompleteCopy() const;
-
-    bool respectsTriangularInequality();
 
     void kruskalDfs(Vertex *vertex);
     void kruskal(std::vector<Edge*> &edges);
