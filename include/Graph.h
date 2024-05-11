@@ -60,6 +60,13 @@ public:
 
     double backtrackingTsp(int startId);
     double heldKarpTsp(int startId);
+
+    /**
+     * @brief Double Minimum Spanning Tree heuristic to calculate TSP solution
+     * @details Complexity: O(V^2 * log(V)),where V is the number of vertices in the graph.
+     * @param startId Id of the vertex to start the TSP
+     * @return TSP solution
+    */
     double doubleMstTsp(int startId);
     double nearestNeighbourTsp(int startId);
     double christofidesTsp(int startId);
