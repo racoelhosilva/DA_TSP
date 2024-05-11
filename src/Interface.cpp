@@ -277,7 +277,7 @@ void Interface::mainMenu() {
                 cout << "Number of vertices: " << numVertices << FAINT << " (>= 25 and < 1000)" << RESET << '\n';
                 cout << "Graph is fully connected" << '\n';
                 cout << BOLD << "  Choosing Christofides* heuristic" << RESET << '\n' << '\n';
-                algorithm = &Graph::christofidesTsp;
+                algorithm = &Graph::christofidesStarTsp;
             } else {
                 cout << "Number of vertices: " << numVertices << FAINT << " (> 1000)" << RESET << '\n';
                 cout << "Graph is fully connected" << '\n';
