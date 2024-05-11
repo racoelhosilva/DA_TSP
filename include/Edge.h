@@ -22,6 +22,7 @@ public:
 
     /**
      * @brief Destructor of the Edge class
+     * @details Complexity: O(1)
      */
     virtual ~Edge();
 
@@ -57,6 +58,7 @@ public:
 
     /**
      * @brief Sets if the edge is selected
+     * @details If the edge has a reverse edge, it also sets the reverse edge as selected or unselected
      * @param selected True to set the edge as selected, false to set it as unselected
      */
     void setSelected(bool selected);
