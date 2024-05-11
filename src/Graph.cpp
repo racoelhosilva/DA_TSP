@@ -173,7 +173,29 @@ double Graph::heldKarpTsp(int startId) {
 }
 
 double Graph::doubleMstTsp(int startId) {
-    return 0.0;
+    if (vertexSet_.empty())
+        return 0;
+
+    Graph *copy = createCompleteCopy();
+
+    vector<Edge*> edges;
+    edges.reserve(copy->vertexSet_.size() * copy->vertexSet_.size());
+    for (Vertex *v: copy->vertexSet_) {
+        for (Edge *edge: v->getAdj()) {
+            edges.push_back(edge);
+            edge->setSelected(false);
+        }
+    }
+
+    copy->kruskal(edges);
+
+    for (Vertex *vertex: copy->vertexSet_)
+        vertex->setVisited(false);
+    Vertex *root = copy->findVertex(startId), *last = root;
+    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(startId)->getWeight();
+
+    delete copy;
+    return res;
 }
 
 double Graph::nearestNeighbourTsp(int startId) {
