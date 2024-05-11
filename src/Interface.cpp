@@ -5,12 +5,14 @@
 #include <iomanip>
 #include <cmath>
 #include <chrono>
+#include <algorithm>
 
 using namespace std;
 
 bool Interface::init(){
     categoryMenu();
     if (graph == nullptr){
+        cout << "Error reading the dataset files!\n";
         return false;
     }
     clearScreen();
@@ -81,7 +83,7 @@ void Interface::printDatasetsOptions(const vector<std::string> &options, int cho
 void Interface::printAlgorithmOptions(const vector<std::string> &options, int choice){
     std::cout << "│" << std::string(4, ' ') << std::setw(74) << std::left << options[options.size()-1] << "│" << '\n';
 
-    for (int idx = 1; idx < (int)options.size() - 2; idx++){
+    for (int idx = 1; idx < 3; idx++){
         int space = 73;
         if (idx >= 10){
             space--;
@@ -93,17 +95,33 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
             std::cout << "│" << GREEN << " [" << idx << "] " << RESET << FAINT << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
         }
     }
+    for (int idx = 3; idx < (int)options.size() - 3; idx++){
+        int space = 73;
+        if (idx >= 10){
+            space--;
+        }
+        if (choice == idx){
+            std::cout << "│" << BOLD << YELLOW << " [" << idx << "] " << RESET << BOLD << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
+        }
+        else {
+            std::cout << "│" << YELLOW << " [" << idx << "] " << RESET << FAINT << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
+        }
+    }
 
     int space = 73;
-    if (options.size() - 2 >= 10){
-        space--;
+
+    if (choice == (int)options.size()-3){
+        std::cout << "│" << BOLD << MAGENTA << " [" << options.size()-3 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-3] << RESET "│" << '\n';
+    }
+    else {
+        std::cout << "│" << MAGENTA << " [" << options.size()-3 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-3] << RESET << "│" << '\n';
     }
 
     if (choice == (int)options.size()-2){
-        std::cout << "│" << BOLD << YELLOW << " [" << options.size()-2 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-2] << RESET "│" << '\n';
+        std::cout << "│" << BOLD << BLUE << " [" << options.size()-2 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-2] << RESET "│" << '\n';
     }
     else {
-        std::cout << "│" << YELLOW << " [" << options.size()-2 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-2] << RESET << "│" << '\n';
+        std::cout << "│" << BLUE << " [" << options.size()-2 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-2] << RESET << "│" << '\n';
     }
 
     if (choice == 0){
@@ -125,7 +143,6 @@ void Interface::mainMenu() {
              "Nearest Neighbour Heuristic",
              "Christofides* Heuristic",
              "Real World Heuristic",
-             "Print Graph",
              "Statistics",
              "Choose your operation:"
             };
@@ -146,64 +163,65 @@ void Interface::mainMenu() {
     endCapture();
 
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+    std::chrono::duration<double> execution{};
     double result = NAN;
+    std::string title;
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
             result = graph->backtrackingTsp(0);
             end = chrono::high_resolution_clock::now();
-            backtrackResult = result;
+            title = "Backtracking";
+            execution = end - start;
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 2: {
             start = chrono::high_resolution_clock::now();
             result = graph->heldKarpTsp(0);
             end = chrono::high_resolution_clock::now();
-            heldKarpResult = result;
+            title = "Held-Karp";
+            execution = end - start;
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 3: {
             start = chrono::high_resolution_clock::now();
             result = graph->doubleMstTsp(0);
             end = chrono::high_resolution_clock::now();
-            doubleMSTResult = result;
+            title = "Double MST";
+            execution = end - start;
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 4: {
             start = chrono::high_resolution_clock::now();
             result = graph->nearestNeighbourTsp(0);
             end = chrono::high_resolution_clock::now();
-            nearestNeighborResult = result;
+            title = "Nearest Neighbor";
+            execution = end - start;
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 5: {
             start = chrono::high_resolution_clock::now();
             result = graph->christofidesTsp(0);
             end = chrono::high_resolution_clock::now();
-            christofidesResult = result;
+            title = "Christofides*";
+            execution = end - start;
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 6: {
             start = chrono::high_resolution_clock::now();
             result = graph->realWorldTsp(0);
             end = chrono::high_resolution_clock::now();
-            realWorldResult = result;
+            title = "Real World";
+            execution = end - start;
+            stats.push_back({title, result, execution.count()});
             break;
         }
         case 7: {
-            for (Vertex *v: graph->getVertexSet()) {
-                cout << v->getId() << ": ";
-                for (auto e: v->getAdj()) {
-                    cout << e->getDest()->getId() << '(' << e->getWeight() << ')' << ' ';
-                }
-                cout << '\n';
-            }
-
-            cout << graph->getNumEdges() << '\n';
-            waitInput();
-            return;
-        }
-        case 8: {
             statistics();
             waitInput();
             return;
@@ -213,9 +231,9 @@ void Interface::mainMenu() {
             break;
     }
 
-    std::chrono::duration<double> execution = end - start;
-    cout << "Result: " << fixed << setprecision(3) << result << '\n';
-    cout << "Execution: " << fixed << setprecision(10) << execution.count() << '\n';
+    cout << BOLD << MAGENTA << string(15, ' ') << title << RESET << '\n';
+    cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
+    cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
     waitInput();
 }
 
@@ -289,22 +307,24 @@ void Interface::extraFullyConnectedMenu() {
 
     endCapture();
 
+    string nodeFilename = "../graphs/Extra Fully Connected/nodes.csv", edgeFilename;
     switch (choice) {
-        case 1: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_25.csv"); break;
-        case 2: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_50.csv"); break;
-        case 3: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_75.csv"); break;
-        case 4: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_100.csv"); break;
-        case 5: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_200.csv"); break;
-        case 6: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_300.csv"); break;
-        case 7: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_400.csv"); break;
-        case 8: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_500.csv"); break;
-        case 9: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_600.csv"); break;
-        case 10: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_700.csv"); break;
-        case 11: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_800.csv"); break;
-        case 12: graph = Graph::parseMediumGraph("../graphs/Extra Fully Connected/nodes.csv", "../graphs/Extra Fully Connected/edges_900.csv"); break;
+        case 1: edgeFilename = "../graphs/Extra Fully Connected/edges_25.csv"; break;
+        case 2: edgeFilename = "../graphs/Extra Fully Connected/edges_50.csv"; break;
+        case 3: edgeFilename = "../graphs/Extra Fully Connected/edges_75.csv"; break;
+        case 4: edgeFilename = "../graphs/Extra Fully Connected/edges_100.csv"; break;
+        case 5: edgeFilename = "../graphs/Extra Fully Connected/edges_200.csv"; break;
+        case 6: edgeFilename = "../graphs/Extra Fully Connected/edges_300.csv"; break;
+        case 7: edgeFilename = "../graphs/Extra Fully Connected/edges_400.csv"; break;
+        case 8: edgeFilename = "../graphs/Extra Fully Connected/edges_500.csv"; break;
+        case 9: edgeFilename = "../graphs/Extra Fully Connected/edges_600.csv"; break;
+        case 10: edgeFilename = "../graphs/Extra Fully Connected/edges_700.csv"; break;
+        case 11: edgeFilename = "../graphs/Extra Fully Connected/edges_800.csv"; break;
+        case 12: edgeFilename = "../graphs/Extra Fully Connected/edges_900.csv"; break;
         default:
             categoryMenu();
     }
+    graph = Graph::parseMediumGraph(nodeFilename, edgeFilename);
 }
 
 void Interface::realWorldMenu() {
@@ -378,7 +398,13 @@ void Interface::toyMenu() {
 }
 
 void Interface::statistics() {
-    cout << "Statistics :)\n";
+    std::sort(stats.begin(), stats.end(),
+              [](const Statistic& s1, const Statistic& s2){return s1.result < s2.result || (s1.result == s2.result && s1.time < s2.time);});
+    cout << BOLD << INVERT << std::string(15,' ') << "Algorithm" << std::string(16,' ') << left << setw(20) << "TSP Result" << setw(20) << "Time" << RESET << '\n';
+    for (const Statistic& s : stats){
+        cout << "│" << std::string(2, ' ') << BOLD << left << setw(37) << s.algorithm << RESET << fixed << setprecision(3) << setw(20) << s.result << setprecision(10) << setw(19) << s.time << "│" << '\n';
+    }
+    printBottom();
 }
 
 void Interface::exitMenu() {
