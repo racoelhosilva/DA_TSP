@@ -184,9 +184,8 @@ void Interface::mainMenu() {
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
     std::chrono::duration<double> execution{};
     double result = NAN;
+    int startId;
     std::string title;
-    double (Graph::*algorithm)(int);
-    int numVertices, numEdges, startId;
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
@@ -198,6 +197,11 @@ void Interface::mainMenu() {
             break;
         }
         case 2: {
+            if (graph->getVertexSet().size() > 64) {
+                cout << "Graph too big for Held-Karp algorithm (no of vertices > 64). The algorithm will not be performed!\n";
+                waitInput();
+                return;
+            }
             start = chrono::high_resolution_clock::now();
             result = graph->heldKarpTsp(0);
             end = chrono::high_resolution_clock::now();
@@ -244,6 +248,9 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
+            double (Graph::*algorithm)(int);
+            int numVertices, numEdges;
+
             numVertices = (int)graph->getVertexSet().size();
             numEdges = graph->getNumEdges();
             if (numVertices < 25) {
@@ -275,9 +282,9 @@ void Interface::mainMenu() {
             break;
     }
 
-    cout << BOLD << MAGENTA << string(15, ' ') << title << RESET << '\n';
-    if (result > 0 && !isinf(result))
-        cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
+    std::chrono::duration<double> execution = end - start;
+    if (result > 0 && !isinf(result) && !isnan(result))
+        cout << "Result: " << fixed << setprecision(3) << result << '\n';
     else
         cout << BOLD << BLUE << "No results found.\n" << RESET << '\n';
     cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
