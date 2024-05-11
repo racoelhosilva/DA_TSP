@@ -308,7 +308,7 @@ void Interface::mainMenu() {
     }
 
     if (result > 0 && !isinf(result) && !isnan(result))
-        cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << '\n';
+        cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
     else
         cout << BOLD << BLUE << FAINT << "No results found" << RESET << '\n';
     cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
