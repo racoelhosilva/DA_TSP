@@ -62,7 +62,6 @@ public:
     double heldKarpTsp(int startId);
     double doubleMstTsp(int startId);
     double nearestNeighbourTsp(int startId);
-    double christofidesTsp(int startId);
 
     /**
      * @brief Heuristic to calculate the TSP of the real world graph
@@ -70,6 +69,7 @@ public:
      * @param startId Id of the vertex to start the TSP
      * @return Length of the TSP
     */
+    double christofidesStarTsp(int startId);
     double realWorldTsp(int startId);
 
     static Graph * parse(const std::string &edgeFilename = "", const std::string &nodeFilename = "");
@@ -78,6 +78,7 @@ public:
     static Graph *parseMediumGraph(const std::string &nodeFilename, const std::string &edgeFilename);
     static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
+    bool respectsTriangularInequality();
 private:
     static double haversineDistance(const Vertex *v1, const Vertex *v2);
     double **getDistMatrix() const;
@@ -87,8 +88,6 @@ private:
     void deleteMatrix(T **matrix) const;
 
     Graph *createCompleteCopy() const;
-
-    bool respectsTriangularInequality();
 
     void kruskalDfs(Vertex *vertex);
     void kruskal(std::vector<Edge*> &edges);
