@@ -80,3 +80,19 @@ void Vertex::deleteEdge(Edge *edge) {
 void Vertex::setPathToStart(Edge *pathToStart) {
     pathToStart_ = pathToStart;
 }
+
+int Vertex::getDegree() const {
+    return degree_;
+}
+
+void Vertex::setDegree(int degree) {
+    Vertex::degree_ = degree;
+}
+
+Edge *Vertex::findEdgeTo(int destId) const {
+    for (Edge* edge: adj_) {
+        if (edge->getDest()->getId() == destId)
+            return edge;
+    }
+    return nullptr;
+}

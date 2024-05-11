@@ -23,6 +23,8 @@ add_executable(DA_TSP main.cpp
         src/Edge.cpp
         include/Vertex.h
         src/Vertex.cpp
+        src/Ufds.cpp
+        include/Ufds.h
 )
 
 add_subdirectory(docs)

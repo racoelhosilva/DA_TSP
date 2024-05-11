@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include "Ufds.h"
 
 #include <fstream>
 #include <sstream>
@@ -7,6 +8,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdint>
+#include <algorithm>
 
 #define TRAIL_ZERO(n) __builtin_ctz(n)
 
@@ -91,6 +93,7 @@ double Graph::backtrackingTsp(int startId) {
 
     for (Vertex *vertex: vertexSet_) {
         vertex->setVisited(false);
+        vertex->setPath(nullptr);
         vertex->setPathToStart(nullptr);
     }
 
@@ -217,7 +220,32 @@ double Graph::nearestNeighbourTsp(int startId) {
 }
 
 double Graph::christofidesTsp(int startId) {
-    return 0.0;
+    if (vertexSet_.empty())
+        return 0;
+
+    Graph *copy = createCompleteCopy();
+
+    vector<Edge*> edges;
+    edges.reserve(copy->vertexSet_.size() * copy->vertexSet_.size());
+    for (Vertex *v: copy->vertexSet_) {
+        for (Edge *edge: v->getAdj()) {
+            edges.push_back(edge);
+            edge->setSelected(false);
+        }
+    }
+
+    copy->kruskal(edges);
+    for (Vertex *vertex: copy->vertexSet_)
+        vertex->setVisited(vertex->getDegree() % 2 == 0);
+    copy->minWeightPerfectMatchingGreedy(edges);
+
+    for (Vertex *vertex: copy->vertexSet_)
+        vertex->setVisited(false);
+    Vertex *root = copy->findVertex(0), *last = root;
+    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(0)->getWeight();
+
+    delete copy;
+    return res;
 }
 
 double Graph::realWorldTsp(int startId) {
@@ -404,7 +432,7 @@ double Graph::haversineDistance(const Vertex *v1, const Vertex *v2) {
     return earthRadius * c;
 }
 
-double **Graph::getDistMatrix() {
+double **Graph::getDistMatrix() const {
     auto matrix = new double*[vertexSet_.size()];
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
@@ -420,12 +448,12 @@ double **Graph::getDistMatrix() {
     return matrix;
 }
 
-double **Graph::getCompleteDistMatrix() {
+double **Graph::getCompleteDistMatrix() const {
     auto matrix = new double*[vertexSet_.size()];
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         matrix[i] = new double[vertexSet_.size()];
         for (int j = 0; j < (int)vertexSet_.size(); j++)
-            matrix[i][j] = i == j ? 0 : std::numeric_limits<double>::quiet_NaN();
+            matrix[i][j] = i == j ? 0 : numeric_limits<double>::quiet_NaN();
     }
     for (Vertex *orig: vertexSet_) {
         for (Edge *edge: orig->getAdj()) {
@@ -435,15 +463,15 @@ double **Graph::getCompleteDistMatrix() {
     }
     for (int i = 0; i < (int)vertexSet_.size(); i++) {
         for (int j = 0; j < (int)vertexSet_.size(); j++) {
-            if (isnan(matrix[i][j])){
+            if (isnan(matrix[i][j]))
                 matrix[i][j] = haversineDistance(findVertex(i), findVertex(j));
-            }
         }
     }
     return matrix;
 }
 
-void Graph::deleteMatrix(double **matrix) {
+template<class T>
+void Graph::deleteMatrix(T **matrix) const {
     for (int i = 0; i < (int)vertexSet_.size(); i++)
         delete [] matrix[i];
     delete [] matrix;
@@ -466,4 +494,98 @@ bool Graph::respectsTriangularInequality() {
     return true;
 }
 
+void Graph::kruskal(std::vector<Edge*> &edges) {
+    if (vertexSet_.empty())
+        return;
 
+    Ufds ufds((int)vertexSet_.size());
+    sort(edges.begin(), edges.end(), [](Edge *edge1, Edge *edge2) {
+        return edge1->getWeight() < edge2->getWeight();
+    });
+
+    for (Edge *edge: edges) {
+        Vertex *u = edge->getOrig(), *v = edge->getDest();
+        if (!ufds.isSameSet(u->getId(), v->getId())) {
+            edge->setSelected(true);
+            edge->getReverse()->setSelected(true);
+            ufds.linkSets(u->getId(), v->getId());
+        }
+    }
+
+    for (Vertex *vertex: vertexSet_) {
+        vertex->setVisited(false);
+        vertex->setDegree(0);
+        vertex->setPath(nullptr);
+    }
+
+    Vertex *root = vertexSet_[0];
+    kruskalDfs(root);
+}
+
+void Graph::kruskalDfs(Vertex *v) {
+    v->setVisited(true);
+    for (Edge *e: v->getAdj()) {
+        if (!e->isSelected())
+            continue;
+
+        Vertex *w = e->getDest();
+        if (!w->isVisited()) {
+            w->setPath(e->getReverse());
+            v->setDegree(v->getDegree() + 1);
+            w->setDegree(w->getDegree() + 1);
+            kruskalDfs(w);
+        }
+    }
+}
+
+void Graph::minWeightPerfectMatchingGreedy(const vector<Edge *> &sortedEdges) {
+    for (Edge *edge: sortedEdges) {
+        Vertex *u = edge->getOrig(), *v = edge->getDest();
+        if (u->isVisited() || v->isVisited())
+            continue;
+        edge->setSelected(true);
+        u->setVisited(true);
+        v->setVisited(true);
+    }
+}
+
+double Graph::hamiltonianCircuitDfs(Vertex *vertex, Vertex *&last) {
+    double length = 0;
+    vertex->setVisited(true);
+
+    for (Edge *edge: vertex->getAdj()) {
+        Vertex *dest = edge->getDest();
+        if (edge->isSelected() && !edge->getDest()->isVisited()) {
+            length += last->findEdgeTo(dest->getId())->getWeight();
+            last = dest;
+            length += hamiltonianCircuitDfs(dest, last);
+        }
+    }
+
+    return length;
+}
+
+Graph *Graph::createCompleteCopy() const {
+    auto newGraph = new Graph;
+    for (Vertex *vertex: vertexSet_)
+        newGraph->addVertex(new Vertex(vertex->getId(), vertex->getLatitude(), vertex->getLongitude()));
+
+    auto hasEdgeTo = new bool[vertexSet_.size()];
+    for (Vertex *vertex: vertexSet_) {
+        for (int id = vertex->getId() + 1; id < (int)vertexSet_.size(); id++)
+            hasEdgeTo[id] = false;
+        for (Edge *edge: vertex->getAdj()) {
+            if (edge->getDest()->getId() < vertex->getId())
+                continue;
+            newGraph->addEdge(vertex->getId(), edge->getDest()->getId(), edge->getWeight());
+            hasEdgeTo[edge->getDest()->getId()] = true;
+        }
+        for (int id = vertex->getId() + 1; id < (int)vertexSet_.size(); id++) {
+            if (!hasEdgeTo[id])
+                newGraph->addEdge(vertex->getId(), id, haversineDistance(vertex, findVertex(id)));
+        }
+    }
+
+    delete [] hasEdgeTo;
+    return newGraph;
+}

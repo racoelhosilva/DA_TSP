@@ -73,13 +73,20 @@ public:
 
 private:
     static double haversineDistance(const Vertex *v1, const Vertex *v2);
-    double **getDistMatrix();
-    double **getCompleteDistMatrix();
-    void deleteMatrix(double **matrix);
+    double **getDistMatrix() const;
+    double **getCompleteDistMatrix() const;
+
+    template<class T>
+    void deleteMatrix(T **matrix) const;
+
+    Graph *createCompleteCopy() const;
 
     bool respectsTriangularInequality();
 
-    void kruskal();
+    void kruskalDfs(Vertex *vertex);
+    void kruskal(std::vector<Edge*> &edges);
+    void minWeightPerfectMatchingGreedy(const std::vector<Edge*> &sortedEdges);
+    double hamiltonianCircuitDfs(Vertex *vertex, Vertex *&last);
 
     std::vector<Vertex*> vertexSet_;
 };
