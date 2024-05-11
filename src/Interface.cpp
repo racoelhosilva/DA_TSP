@@ -208,7 +208,8 @@ void Interface::mainMenu() {
         }
         case 2: {
             if (graph->getVertexSet().size() > 64) {
-                cout << "Graph too big for Held-Karp algorithm (no of vertices > 64). The algorithm will not be performed!\n";
+                cout << BOLD << "Graph too big" << RESET << " for Held-Karp algorithm" << FAINT " (no of vertices > 64)" << RESET << '\n';
+                cout << BOLD << "The algorithm will not be performed!" << RESET << '\n';
                 waitInput();
                 return;
             }
@@ -264,16 +265,23 @@ void Interface::mainMenu() {
             numVertices = (int)graph->getVertexSet().size();
             numEdges = graph->getNumEdges();
             if (numVertices < 25) {
-                cout << "No of vertices < 25, choosing Held-Karp algorithm\n";
+                cout << "Number of vertices: " << numVertices << FAINT << " (< 25)" << RESET << '\n';
+                cout << BOLD << "  Choosing Held-Karp algorithm" << '\n' << '\n';
                 algorithm = &Graph::heldKarpTsp;
             } else if (numEdges < (numVertices - 1) * numVertices / 2) {
-                cout << "No of vertices >= 25 and graph is not fully connected, choosing Real World heuristic, starting in 0\n";
+                cout << "Number of vertices: " << numVertices << FAINT << " (>= 25)" << RESET << '\n';
+                cout << "Graph is not fully connected" << '\n';
+                cout << BOLD << "  Choosing Real World heuristic" << RESET << FAINT << " (starting in 0)" << RESET << '\n' << '\n';
                 algorithm = &Graph::realWorldTsp;
             } else if (numVertices < 1000) {
-                cout << "25 <= no of vertices < 1000 and graph is fully connected, choosing Christofides* heuristic\n";
+                cout << "Number of vertices: " << numVertices << FAINT << " (>= 25 and < 1000)" << RESET << '\n';
+                cout << "Graph is fully connected" << '\n';
+                cout << BOLD << "  Choosing Christofides* heuristic" << RESET << '\n' << '\n';
                 algorithm = &Graph::christofidesTsp;
             } else {
-                cout << "No of vertices >= 1000 and graph is fully connected, choosing Nearest Neighbor heuristic\n";
+                cout << "Number of vertices: " << numVertices << FAINT << " (> 1000)" << RESET << '\n';
+                cout << "Graph is fully connected" << '\n';
+                cout << BOLD << "  Choosing Nearest Neighbor heuristic" << RESET << '\n' << '\n';
                 algorithm = &Graph::nearestNeighbourTsp;
             }
 
