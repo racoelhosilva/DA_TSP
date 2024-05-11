@@ -73,11 +73,56 @@ public:
      */
     double backtrackingTsp();
 
-
+    /**
+     * @brief Calculates the exact solution of the TSP using the Held-Karp algorithm.
+     * @details Technically, this function does not allow execution on a graph with more than 64 vertices, due to the
+     * bitmasks used having only 64 bits. Nonetheless, this algorithm has a space complexity of O(V*2^V), and execution
+     * in a graph with 64 vertices would require 2.3 zettabytes (or 2.3*10^12 GB) of memory to complete. Complexity:
+     * O(V^2*2^V), where V is the number of vertices in the graph.
+     * @return The cost of the solution found
+     */
     double heldKarpTsp();
+
+    /**
+     * @brief Calculates an approximate solution of the TSP using the double minimum spanning tree heuristic.
+     * @details If the graph is not fully connected, the missing edges are calculated using the haversine formula.
+     * Complexity: O(V^2 log V), where V is the number of vertices in the graph. This heuristic is a 2-approximation
+     * algorithm for the TSP in graphs that respect the triangular inequality.
+     * @param startId The id of the vertex from where to start the algorithm
+     * @return The cost of the solution found
+     */
     double doubleMstTsp(int startId);
+
+    /**
+     * @brief Calculates an approximate solution of the TSP using the nearest neighbour heuristic.
+     * @details Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @param startId The id of the vertex from where to start the algorithm
+     * @return The cost of the solution found
+     */
     double nearestNeighbourTsp(int startId);
+
+    /**
+     * @brief Calculates an approximate solution of the TSP using the christofides* heuristic.
+     * @details  This heuristic is based on the christofides heuristic, however it finds the minimum weight perfect
+     * matching of the odd vertices using a greedy heuristic instead of the Blossom BP algorithm. As such, a 3/2
+     * approximation ratio for graph that respect the triangular inequality cannot be guaranteed. If the graph is not
+     * fully connected, the missing edges are calculated using the haversine formula. Complexity: O(V^2 log V), where V
+     * is the number of vertices in the graph.
+     * @param startId The id of the vertex from where to start the algorithm
+     * @return The cost of the solution found
+     */
     double christofidesTsp(int startId);
+
+    /**  TODO: specify the algorithm
+     * @brief Calculates an approximate solution of the TSP using an heuristic that always finds a solution for any
+     * connected graph
+     * @details The algorithm is based on the [ --- ] heuristic. To make it work with graphs that are not fully
+     * connected and without generating new edges, while still guaranteeing finding a solution in polynomial time, the
+     * condition of the TSP saying that all vertices must be visited exactly once is relaxed, allowing a vertex to be
+     * visited more than once. Complexity: O(V^3), where V is the number of vertices in the graph.
+     * @param startId The id of the vertex from where to start the algorithm
+     * @return The cost of the solution found
+     */
     double realWorldTsp(int startId);
 
     /**
