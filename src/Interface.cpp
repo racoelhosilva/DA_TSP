@@ -132,6 +132,24 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
     }
 }
 
+int Interface::receiveVertexId() {
+    int id;
+    cout << "Enter the starting vertex id: ";
+    cin >> id;
+    while (!cin || graph->findVertex(id) == nullptr) {
+        cout << "Invalid vertex id. Please enter a valid one: ";
+        if (!cin) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        cin >> id;
+    }
+    cout << '\n';
+    getNextPress(); // Skip enter
+
+    return 0;
+}
+
 void Interface::mainMenu() {
     initCapture();
     std::cout << HIDE_CURSOR;
@@ -168,7 +186,7 @@ void Interface::mainMenu() {
     double result = NAN;
     std::string title;
     double (Graph::*algorithm)(int);
-    int numVertices, numEdges;
+    int numVertices, numEdges, startId;
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
@@ -216,8 +234,9 @@ void Interface::mainMenu() {
             break;
         }
         case 6: {
+            startId = receiveVertexId();
             start = chrono::high_resolution_clock::now();
-            result = graph->realWorldTsp(0);
+            result = graph->realWorldTsp(startId);
             end = chrono::high_resolution_clock::now();
             title = "Real World";
             execution = end - start;
@@ -231,7 +250,7 @@ void Interface::mainMenu() {
                 cout << "No of vertices < 25, choosing Held-Karp algorithm\n";
                 algorithm = &Graph::heldKarpTsp;
             } else if (numEdges < (numVertices - 1) * numVertices / 2) {
-                cout << "No of vertices >= 25 and graph is not fully connected, choosing Real World heuristic\n";
+                cout << "No of vertices >= 25 and graph is not fully connected, choosing Real World heuristic, starting in 0\n";
                 algorithm = &Graph::realWorldTsp;
             } else if (numVertices < 1000) {
                 cout << "25 <= no of vertices < 1000 and graph is fully connected, choosing Christofides* heuristic\n";

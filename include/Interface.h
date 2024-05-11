@@ -63,6 +63,12 @@ public:
     void printAlgorithmOptions(const std::vector<std::string> &options, int choice);
 
     /**
+     * @brief Receives a vertex id from the user, until the one given is valid
+     * @return The vertex id given by the user
+     */
+    int receiveVertexId();
+
+    /**
      * @brief Main menu to select which TSP algorithm should be processed
      */
     void mainMenu();
