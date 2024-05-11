@@ -104,11 +104,9 @@ public:
     void statistics();
 
 private:
-    int infoSpacing = 8;
-    int width = 80;
-    Graph* graph = nullptr;
+    Graph* graph_ = nullptr;
 
-    std::vector<Statistic> stats;
+    std::vector<Statistic> stats_;
 };
 
 #endif //DA_TSP_INTERFACE_H

@@ -11,7 +11,7 @@ using namespace std;
 
 bool Interface::init(){
     categoryMenu();
-    if (graph == nullptr){
+    if (graph_ == nullptr){
         cout << "Error reading the dataset files!\n";
         return false;
     }
@@ -60,12 +60,12 @@ void Interface::waitInput() {
 int Interface::receiveVertexId() {
     int id;
 
-    std::cout << FAINT << "Starting Vertex (0-" << graph->getVertexSet().size()-1 << "): " << RESET;
+    std::cout << FAINT << "Starting Vertex (0-" << graph_->getVertexSet().size()-1 << "): " << RESET;
 
     cin >> id;
-    while (!cin || graph->findVertex(id) == nullptr) {
+    while (!cin || graph_->findVertex(id) == nullptr) {
         cout << BOLD << RED << "│ Invalid Vertex ID │ " << RESET;
-        std::cout << FAINT << "Starting Vertex (0-" << graph->getVertexSet().size()-1 << "): " << RESET;
+        std::cout << FAINT << "Starting Vertex (0-" << graph_->getVertexSet().size()-1 << "): " << RESET;
         if (!cin) {
             cin.clear();
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -199,72 +199,72 @@ void Interface::mainMenu() {
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
-            result = graph->backtrackingTsp(0);
+            result = graph_->backtrackingTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Backtracking";
             execution = end - start;
-            stats.push_back({title, result, execution.count()});
+            stats_.push_back({title, result, execution.count()});
             break;
         }
         case 2: {
-            if (graph->getVertexSet().size() > 64) {
+            if (graph_->getVertexSet().size() > 64) {
                 cout << BOLD << "Graph too big" << RESET << " for Held-Karp algorithm" << FAINT " (no of vertices > 64)" << RESET << '\n';
                 cout << BOLD << "The algorithm will not be performed!" << RESET << '\n';
                 waitInput();
                 return;
             }
             start = chrono::high_resolution_clock::now();
-            result = graph->heldKarpTsp(0);
+            result = graph_->heldKarpTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Held-Karp";
             execution = end - start;
-            stats.push_back({title, result, execution.count()});
+            stats_.push_back({title, result, execution.count()});
             break;
         }
         case 3: {
             start = chrono::high_resolution_clock::now();
-            result = graph->nearestNeighbourTsp(0);
+            result = graph_->nearestNeighbourTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Nearest Neighbor";
             execution = end - start;
-            stats.push_back({title, result, execution.count()});
+            stats_.push_back({title, result, execution.count()});
             break;
 
         }
         case 4: {
             start = chrono::high_resolution_clock::now();
-            result = graph->doubleMstTsp(0);
+            result = graph_->doubleMstTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Double MST";
             execution = end - start;
-            stats.push_back({title, result, execution.count()});
+            stats_.push_back({title, result, execution.count()});
             break;
         }
         case 5: {
             start = chrono::high_resolution_clock::now();
-            result = graph->christofidesStarTsp(0);
+            result = graph_->christofidesStarTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Christofides*";
             execution = end - start;
-            stats.push_back({title, result, execution.count()});
+            stats_.push_back({title, result, execution.count()});
             break;
         }
         case 6: {
             startId = receiveVertexId();
             start = chrono::high_resolution_clock::now();
-            result = graph->realWorldTsp(startId);
+            result = graph_->realWorldTsp(startId);
             end = chrono::high_resolution_clock::now();
             title = "Real World";
             execution = end - start;
-            stats.push_back({title, result, execution.count()});
+            stats_.push_back({title, result, execution.count()});
             break;
         }
         case 7: {
             double (Graph::*algorithm)(int);
             int numVertices, numEdges;
 
-            numVertices = (int)graph->getVertexSet().size();
-            numEdges = graph->getNumEdges();
+            numVertices = (int)graph_->getVertexSet().size();
+            numEdges = graph_->getNumEdges();
             if (numVertices < 25) {
                 cout << "Number of vertices: " << numVertices << FAINT << " (< 25)" << RESET << '\n';
                 cout << BOLD << "  Choosing Held-Karp algorithm" << '\n' << '\n';
@@ -287,13 +287,13 @@ void Interface::mainMenu() {
             }
 
             start = chrono::high_resolution_clock::now();
-            result = (graph->*algorithm)(0);
+            result = (graph_->*algorithm)(0);
             end = chrono::high_resolution_clock::now();
             execution = end - start;
             break;
         }
         case 8: {
-            if (stats.empty()){
+            if (stats_.empty()){
                 cout << "No statistics calculated to display\n";
             }
             else {
@@ -347,7 +347,7 @@ void Interface::categoryMenu() {
         case 2: realWorldMenu(); break;
         case 3: toyMenu(); break;
         case 4:
-            graph = Graph::parseRealWorldGraph("../graphs/Custom/nodes.csv", "../graphs/Custom/edges.csv");
+            graph_ = Graph::parseRealWorldGraph("../graphs/Custom/nodes.csv", "../graphs/Custom/edges.csv");
             break;
         default:
             exitMenu();
@@ -406,7 +406,7 @@ void Interface::extraFullyConnectedMenu() {
         default:
             categoryMenu();
     }
-    graph = Graph::parseMediumGraph(nodeFilename, edgeFilename);
+    graph_ = Graph::parseMediumGraph(nodeFilename, edgeFilename);
 }
 
 void Interface::realWorldMenu() {
@@ -436,9 +436,9 @@ void Interface::realWorldMenu() {
     endCapture();
 
     switch (choice) {
-        case 1: graph = Graph::parseRealWorldGraph("../graphs/Real World/graph1/nodes.csv", "../graphs/Real World/graph1/edges.csv"); break;
-        case 2: graph = Graph::parseRealWorldGraph("../graphs/Real World/graph2/nodes.csv", "../graphs/Real World/graph2/edges.csv"); break;
-        case 3: graph = Graph::parseRealWorldGraph("../graphs/Real World/graph3/nodes.csv", "../graphs/Real World/graph3/edges.csv"); break;
+        case 1: graph_ = Graph::parseRealWorldGraph("../graphs/Real World/graph1/nodes.csv", "../graphs/Real World/graph1/edges.csv"); break;
+        case 2: graph_ = Graph::parseRealWorldGraph("../graphs/Real World/graph2/nodes.csv", "../graphs/Real World/graph2/edges.csv"); break;
+        case 3: graph_ = Graph::parseRealWorldGraph("../graphs/Real World/graph3/nodes.csv", "../graphs/Real World/graph3/edges.csv"); break;
         default:
             categoryMenu();
     }
@@ -471,19 +471,19 @@ void Interface::toyMenu() {
     endCapture();
 
     switch (choice) {
-        case 1: graph = Graph::parseToyGraph("../graphs/Toy/shipping.csv"); break;
-        case 2: graph = Graph::parseToyGraph("../graphs/Toy/stadiums.csv"); break;
-        case 3: graph = Graph::parseToyGraph("../graphs/Toy/tourism.csv"); break;
+        case 1: graph_ = Graph::parseToyGraph("../graphs/Toy/shipping.csv"); break;
+        case 2: graph_ = Graph::parseToyGraph("../graphs/Toy/stadiums.csv"); break;
+        case 3: graph_ = Graph::parseToyGraph("../graphs/Toy/tourism.csv"); break;
         default:
             categoryMenu();
     }
 }
 
 void Interface::statistics() {
-    std::sort(stats.begin(), stats.end(),
+    std::sort(stats_.begin(), stats_.end(),
               [](const Statistic& s1, const Statistic& s2){return s1.result < s2.result || (s1.result == s2.result && s1.time < s2.time);});
     cout << BOLD << INVERT << std::string(15,' ') << "Algorithm" << std::string(16,' ') << left << setw(20) << "TSP Result" << setw(20) << "Time" << RESET << '\n';
-    for (const Statistic& s : stats){
+    for (const Statistic& s : stats_){
         cout << "│" << std::string(2, ' ') << BOLD << left << setw(37) << s.algorithm << RESET << fixed << setprecision(3) << setw(20) << s.result << setprecision(10) << setw(19) << s.time << "│" << '\n';
     }
     printBottom();
