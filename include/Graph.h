@@ -26,7 +26,7 @@ public:
     /**
      * @brief Finds a vertex in the graph
      * @details Complexity: O(1).
-     * @param in Info of the vertex to search
+     * @param id Id (info) of the vertex to search
      * @return Reference to the vertex wanted, or nullptr of not found
      */
     Vertex *findVertex(int id) const;
@@ -68,7 +68,6 @@ public:
     /**
      * @brief Calculates the exact solution of the TSP using a backtracking approach with branch-and-bound.
      * @details Complexity: O(V!), where V is the number of vertices in the graph.
-     * @param startId The id of the vertex to start the TSP
      * @return The cost of the solution found
      */
     double backtrackingTsp();
@@ -76,7 +75,7 @@ public:
     /**
      * @brief Calculates the exact solution of the TSP using the Held-Karp algorithm.
      * @details Technically, this function does not allow execution on a graph with more than 64 vertices, due to the
-     * bitmasks used having only 64 bits. Nonetheless, this algorithm has a space complexity of O(V*2^V), and execution
+     * bitmasks used having only 64 bits. Nonetheless, this algorithm has a space complexity of O(V*2^V), so the  execution
      * in a graph with 64 vertices would require 2.3 zettabytes (or 2.3*10^12 GB) of memory to complete. Complexity:
      * O(V^2*2^V), where V is the number of vertices in the graph.
      * @return The cost of the solution found
