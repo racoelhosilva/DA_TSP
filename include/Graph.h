@@ -63,13 +63,14 @@ public:
     double doubleMstTsp(int startId);
     double nearestNeighbourTsp(int startId);
 
+    double christofidesStarTsp(int startId);
+
     /**
      * @brief Heuristic to calculate the TSP of the real world graph
-     * @details Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @details Complexity: O(V^3), where V is the number of vertices in the graph.
      * @param startId Id of the vertex to start the TSP
      * @return Length of the TSP
     */
-    double christofidesStarTsp(int startId);
     double realWorldTsp(int startId);
 
     static Graph * parse(const std::string &edgeFilename = "", const std::string &nodeFilename = "");
