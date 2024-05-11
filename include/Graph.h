@@ -63,6 +63,13 @@ public:
     double doubleMstTsp(int startId);
     double nearestNeighbourTsp(int startId);
     double christofidesTsp(int startId);
+
+    /**
+     * @brief Heuristic to calculate the TSP of the real world graph
+     * @details Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @param startId Id of the vertex to start the TSP
+     * @return Length of the TSP
+    */
     double realWorldTsp(int startId);
 
     static Graph * parse(const std::string &edgeFilename = "", const std::string &nodeFilename = "");
@@ -93,6 +100,12 @@ private:
     */
     double **floydWarshall();
 
+    /**
+     * @brief Creates an auxiliary graph with the distances between the vertices
+     * @details Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @param dist Matrix with the distances between the vertices
+     * @return Pointer to the auxiliary graph
+    */
     Graph *createAuxGraph(double **dist) const;
 
     void minWeightPerfectMatchingGreedy(const std::vector<Edge*> &sortedEdges);
