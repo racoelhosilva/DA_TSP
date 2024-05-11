@@ -245,6 +245,7 @@ void Interface::categoryMenu() {
              "Extra Fully Connected Graphs",
              "Real World Graphs",
              "Toy Graphs",
+             "Custom dataset (see README)",
              "Choose the Dataset"
             };
 
@@ -267,6 +268,9 @@ void Interface::categoryMenu() {
         case 1: extraFullyConnectedMenu(); break;
         case 2: realWorldMenu(); break;
         case 3: toyMenu(); break;
+        case 4:
+            graph = Graph::parseRealWorldGraph("../graphs/Custom/nodes.csv", "../graphs/Custom/edges.csv");
+            break;
         default:
             exitMenu();
     }
