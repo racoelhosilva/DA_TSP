@@ -69,7 +69,15 @@ public:
     */
     double doubleMstTsp(int startId);
     double nearestNeighbourTsp(int startId);
+
     double christofidesStarTsp(int startId);
+
+    /**
+     * @brief Heuristic to calculate the TSP of the real world graph
+     * @details Complexity: O(V^3), where V is the number of vertices in the graph.
+     * @param startId Id of the vertex to start the TSP
+     * @return Length of the TSP
+    */
     double realWorldTsp(int startId);
 
     static Graph * parse(const std::string &edgeFilename = "", const std::string &nodeFilename = "");
@@ -91,6 +99,22 @@ private:
 
     void kruskalDfs(Vertex *vertex);
     void kruskal(std::vector<Edge*> &edges);
+
+    /**
+     * @brief Floyd-Warshall algorithm to find the shortest path between all pairs of vertices
+     * @details Complexity: O(V^3), where V is the number of vertices in the graph.
+     * @return Matrix with the shortest paths between all pairs of vertices
+    */
+    double **floydWarshall();
+
+    /**
+     * @brief Creates an auxiliary graph with the distances between the vertices
+     * @details Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @param dist Matrix with the distances between the vertices
+     * @return Pointer to the auxiliary graph
+    */
+    Graph *createAuxGraph(double **dist) const;
+
     void minWeightPerfectMatchingGreedy(const std::vector<Edge*> &sortedEdges);
     double hamiltonianCircuitDfs(Vertex *vertex, Vertex *&last);
 
