@@ -191,8 +191,8 @@ double Graph::doubleMstTsp(int startId) {
 
     for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(false);
-    Vertex *root = copy->findVertex(0), *last = root;
-    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(0)->getWeight();
+    Vertex *root = copy->findVertex(startId), *last = root;
+    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(startId)->getWeight();
 
     delete copy;
     return res;
