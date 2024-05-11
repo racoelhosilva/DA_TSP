@@ -219,7 +219,7 @@ double Graph::nearestNeighbourTsp(int startId) {
     return distance;
 }
 
-double Graph::christofidesTsp(int startId) {
+double Graph::christofidesStarTsp(int startId) {
     if (vertexSet_.empty())
         return 0;
 
@@ -236,16 +236,22 @@ double Graph::christofidesTsp(int startId) {
 
     copy->kruskal(edges);
     for (Vertex *vertex: copy->vertexSet_)
+        vertex->setVisited(false);
+    Vertex *root = copy->findVertex(startId), *last = root;
+    double res1 = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(startId)->getWeight();
+
+    for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(vertex->getDegree() % 2 == 0);
     copy->minWeightPerfectMatchingGreedy(edges);
 
     for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(false);
-    Vertex *root = copy->findVertex(0), *last = root;
-    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(0)->getWeight();
+    root = copy->findVertex(startId);
+    last = root;
+    double res2 = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(startId)->getWeight();
 
     delete copy;
-    return res;
+    return min(res1, res2);
 }
 
 double Graph::realWorldTsp(int startId) {

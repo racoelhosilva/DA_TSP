@@ -205,7 +205,7 @@ void Interface::mainMenu() {
         }
         case 5: {
             start = chrono::high_resolution_clock::now();
-            result = graph->christofidesTsp(0);
+            result = graph->christofidesStarTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Christofides*";
             execution = end - start;
