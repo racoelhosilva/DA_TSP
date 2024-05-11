@@ -48,6 +48,12 @@ public:
     void waitInput();
 
     /**
+     * @brief Receives a vertex id from the user, until the one given is valid
+     * @return The vertex id given by the user
+     */
+    int receiveVertexId();
+
+    /**
      * @brief Prints the options parts in the menu interface, formatted for the dataset section, along with the highlighted option
      * @param options The vector of options to show in the menu
      * @param choice The option that is currently selected (highlighted)

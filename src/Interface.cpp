@@ -57,6 +57,27 @@ void Interface::waitInput() {
     endCapture();
 }
 
+int Interface::receiveVertexId() {
+    int id;
+
+    std::cout << FAINT << "Starting Vertex (0-" << graph->getVertexSet().size()-1 << "): " << RESET;
+
+    cin >> id;
+    while (!cin || graph->findVertex(id) == nullptr) {
+        cout << BOLD << RED << "│ Invalid Vertex ID │ " << RESET;
+        std::cout << FAINT << "Starting Vertex (0-" << graph->getVertexSet().size()-1 << "): " << RESET;
+        if (!cin) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        cin >> id;
+    }
+    cout << '\n';
+    getNextPress(); // Skip enter
+
+    return 0;
+}
+
 void Interface::printDatasetsOptions(const vector<std::string> &options, int choice){
     std::cout << "│" << std::string(4, ' ') << std::setw(74) << std::left << options[options.size()-1] << "│" << '\n';
 
@@ -95,7 +116,7 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
             std::cout << "│" << GREEN << " [" << idx << "] " << RESET << FAINT << std::setw(space) << std::left << options[idx] << RESET << "│" << '\n';
         }
     }
-    for (int idx = 3; idx < (int)options.size() - 3; idx++){
+    for (int idx = 3; idx < (int)options.size() - 4; idx++){
         int space = 73;
         if (idx >= 10){
             space--;
@@ -110,11 +131,18 @@ void Interface::printAlgorithmOptions(const vector<std::string> &options, int ch
 
     int space = 73;
 
-    if (choice == (int)options.size()-3){
-        std::cout << "│" << BOLD << MAGENTA << " [" << options.size()-3 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-3] << RESET "│" << '\n';
+    if (choice == (int)options.size()-4){
+        std::cout << "│" << BOLD << MAGENTA << " [" << options.size()-4 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-4] << RESET "│" << '\n';
     }
     else {
-        std::cout << "│" << MAGENTA << " [" << options.size()-3 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-3] << RESET << "│" << '\n';
+        std::cout << "│" << MAGENTA << " [" << options.size()-4 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-4] << RESET << "│" << '\n';
+    }
+
+    if (choice == (int)options.size()-3){
+        std::cout << "│" << BOLD << CYAN << " [" << options.size()-3 << "] " << RESET << BOLD << std::setw(space) << std::left << options[options.size()-3] << RESET "│" << '\n';
+    }
+    else {
+        std::cout << "│" << CYAN << " [" << options.size()-3 << "] " << RESET << FAINT << std::setw(space) << std::left << options[options.size()-3] << RESET << "│" << '\n';
     }
 
     if (choice == (int)options.size()-2){
@@ -143,6 +171,7 @@ void Interface::mainMenu() {
              "Nearest Neighbour Heuristic",
              "Christofides* Heuristic",
              "Real World Heuristic",
+             "Choose Best Algorithm",
              "Statistics",
              "Choose your operation:"
             };
@@ -165,6 +194,7 @@ void Interface::mainMenu() {
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
     std::chrono::duration<double> execution{};
     double result = NAN;
+    int startId;
     std::string title;
     switch (choice) {
         case 1: {
@@ -177,6 +207,12 @@ void Interface::mainMenu() {
             break;
         }
         case 2: {
+            if (graph->getVertexSet().size() > 64) {
+                cout << BOLD << "Graph too big" << RESET << " for Held-Karp algorithm" << FAINT " (no of vertices > 64)" << RESET << '\n';
+                cout << BOLD << "The algorithm will not be performed!" << RESET << '\n';
+                waitInput();
+                return;
+            }
             start = chrono::high_resolution_clock::now();
             result = graph->heldKarpTsp(0);
             end = chrono::high_resolution_clock::now();
@@ -213,8 +249,9 @@ void Interface::mainMenu() {
             break;
         }
         case 6: {
+            startId = receiveVertexId();
             start = chrono::high_resolution_clock::now();
-            result = graph->realWorldTsp(0);
+            result = graph->realWorldTsp(startId);
             end = chrono::high_resolution_clock::now();
             title = "Real World";
             execution = end - start;
@@ -222,7 +259,45 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
-            statistics();
+            double (Graph::*algorithm)(int);
+            int numVertices, numEdges;
+
+            numVertices = (int)graph->getVertexSet().size();
+            numEdges = graph->getNumEdges();
+            if (numVertices < 25) {
+                cout << "Number of vertices: " << numVertices << FAINT << " (< 25)" << RESET << '\n';
+                cout << BOLD << "  Choosing Held-Karp algorithm" << '\n' << '\n';
+                algorithm = &Graph::heldKarpTsp;
+            } else if (numEdges < (numVertices - 1) * numVertices / 2) {
+                cout << "Number of vertices: " << numVertices << FAINT << " (>= 25)" << RESET << '\n';
+                cout << "Graph is not fully connected" << '\n';
+                cout << BOLD << "  Choosing Real World heuristic" << RESET << FAINT << " (starting in 0)" << RESET << '\n' << '\n';
+                algorithm = &Graph::realWorldTsp;
+            } else if (numVertices < 1000) {
+                cout << "Number of vertices: " << numVertices << FAINT << " (>= 25 and < 1000)" << RESET << '\n';
+                cout << "Graph is fully connected" << '\n';
+                cout << BOLD << "  Choosing Christofides* heuristic" << RESET << '\n' << '\n';
+                algorithm = &Graph::christofidesTsp;
+            } else {
+                cout << "Number of vertices: " << numVertices << FAINT << " (> 1000)" << RESET << '\n';
+                cout << "Graph is fully connected" << '\n';
+                cout << BOLD << "  Choosing Nearest Neighbor heuristic" << RESET << '\n' << '\n';
+                algorithm = &Graph::nearestNeighbourTsp;
+            }
+
+            start = chrono::high_resolution_clock::now();
+            result = (graph->*algorithm)(0);
+            end = chrono::high_resolution_clock::now();
+            execution = end - start;
+            break;
+        }
+        case 8: {
+            if (stats.empty()){
+                cout << "No statistics calculated to display\n";
+            }
+            else {
+                statistics();
+            }
             waitInput();
             return;
         }
@@ -231,8 +306,10 @@ void Interface::mainMenu() {
             break;
     }
 
-    cout << BOLD << MAGENTA << string(15, ' ') << title << RESET << '\n';
-    cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
+    if (result > 0 && !isinf(result) && !isnan(result))
+        cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << '\n';
+    else
+        cout << BOLD << BLUE << FAINT << "No results found" << RESET << '\n';
     cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
     waitInput();
 }

@@ -226,7 +226,7 @@ double Graph::christofidesTsp(int startId) {
     Graph *copy = createCompleteCopy();
 
     vector<Edge*> edges;
-    edges.reserve(copy->vertexSet_.size() * copy->vertexSet_.size());
+    edges.reserve(copy->vertexSet_.size() * (copy->vertexSet_.size() - 1));
     for (Vertex *v: copy->vertexSet_) {
         for (Edge *edge: v->getAdj()) {
             edges.push_back(edge);
