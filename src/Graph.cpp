@@ -261,7 +261,7 @@ double **Graph::floydWarshall()
     for (int k = 0; k < vertexSet_.size(); k++) {
         for (int i = 0; i < vertexSet_.size(); i++) {
             for (int j = 0; j < vertexSet_.size(); j++) {
-                if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                if ((dist[i][k] + dist[k][j]) < dist[i][j]) {
                     dist[i][j] = dist[i][k] + dist[k][j];
                 }
             }
