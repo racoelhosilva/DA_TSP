@@ -292,7 +292,12 @@ void Interface::mainMenu() {
             break;
         }
         case 8: {
-            statistics();
+            if (stats.empty()){
+                cout << "No statistics calculated to display\n";
+            }
+            else {
+                statistics();
+            }
             waitInput();
             return;
         }
