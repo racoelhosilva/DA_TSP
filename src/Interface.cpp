@@ -276,7 +276,10 @@ void Interface::mainMenu() {
     }
 
     cout << BOLD << MAGENTA << string(15, ' ') << title << RESET << '\n';
-    cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
+    if (result > 0 && !isinf(result))
+        cout << BOLD << BLUE << "Result: " << RESET << fixed << setprecision(3) << result << FAINT << " m" << RESET << '\n';
+    else
+        cout << BOLD << BLUE << "No results found.\n" << RESET << '\n';
     cout << BOLD << BLUE << "Execution: " << RESET << fixed << setprecision(10) << execution.count() << FAINT << " s" << RESET << '\n';
     waitInput();
 }
