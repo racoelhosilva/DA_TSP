@@ -85,6 +85,16 @@ private:
 
     void kruskalDfs(Vertex *vertex);
     void kruskal(std::vector<Edge*> &edges);
+
+    /**
+     * @brief Floyd-Warshall algorithm to find the shortest path between all pairs of vertices
+     * @details Complexity: O(V^3), where V is the number of vertices in the graph.
+     * @return Matrix with the shortest paths between all pairs of vertices
+    */
+    double **floydWarshall();
+
+    Graph *createAuxGraph(double **dist) const;
+
     void minWeightPerfectMatchingGreedy(const std::vector<Edge*> &sortedEdges);
     double hamiltonianCircuitDfs(Vertex *vertex, Vertex *&last);
 

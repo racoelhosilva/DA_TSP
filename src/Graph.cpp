@@ -248,8 +248,49 @@ double Graph::christofidesTsp(int startId) {
     return res;
 }
 
+double **Graph::floydWarshall()
+{
+    double **dist = getDistMatrix();
+
+    for (int k = 0; k < vertexSet_.size(); k++) {
+        for (int i = 0; i < vertexSet_.size(); i++) {
+            for (int j = 0; j < vertexSet_.size(); j++) {
+                if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    return dist;
+}
+
+Graph *Graph::createAuxGraph(double **dist) const {
+    auto newGraph = new Graph;
+
+    for (Vertex *vertex: vertexSet_)
+        newGraph->addVertex(new Vertex(vertex->getId(), vertex->getLatitude(), vertex->getLongitude()));
+
+    for (int i = 0; i < vertexSet_.size(); i++) {
+        for (int j = i + 1; j < vertexSet_.size(); j++) {
+            newGraph->addEdge(i, j, dist[i][j]);
+        }
+    }
+
+    return newGraph;
+}
+
 double Graph::realWorldTsp(int startId) {
-    return 0.0;
+    double **dist = floydWarshall();
+
+    auto *auxGraph = createAuxGraph(dist);
+
+    double totalDistance = auxGraph->christofidesTsp(startId);
+
+    deleteMatrix(dist);
+    delete auxGraph;
+
+    return totalDistance;
 }
 
 Graph * Graph::parse(const std::string& edgeFilename, const std::string& nodeFilename){
