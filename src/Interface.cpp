@@ -167,8 +167,8 @@ void Interface::mainMenu() {
             {"Quit",
              "Backtracking Algorithm",
              "Held-Karp Algorithm",
-             "Double Minimum Spanning Tree Heuristic",
              "Nearest Neighbour Heuristic",
+             "Double Minimum Spanning Tree Heuristic",
              "Christofides* Heuristic",
              "Real World Heuristic",
              "Choose Best Algorithm",
@@ -223,18 +223,19 @@ void Interface::mainMenu() {
         }
         case 3: {
             start = chrono::high_resolution_clock::now();
-            result = graph->doubleMstTsp(0);
-            end = chrono::high_resolution_clock::now();
-            title = "Double MST";
-            execution = end - start;
-            stats.push_back({title, result, execution.count()});
-            break;
-        }
-        case 4: {
-            start = chrono::high_resolution_clock::now();
             result = graph->nearestNeighbourTsp(0);
             end = chrono::high_resolution_clock::now();
             title = "Nearest Neighbor";
+            execution = end - start;
+            stats.push_back({title, result, execution.count()});
+            break;
+
+        }
+        case 4: {
+            start = chrono::high_resolution_clock::now();
+            result = graph->doubleMstTsp(0);
+            end = chrono::high_resolution_clock::now();
+            title = "Double MST";
             execution = end - start;
             stats.push_back({title, result, execution.count()});
             break;
