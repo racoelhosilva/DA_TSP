@@ -280,9 +280,9 @@ double **Graph::floydWarshall()
 {
     double **dist = getDistMatrix();
 
-    for (int k = 0; k < vertexSet_.size(); k++) {
-        for (int i = 0; i < vertexSet_.size(); i++) {
-            for (int j = 0; j < vertexSet_.size(); j++) {
+    for (int k = 0; k < (int)vertexSet_.size(); k++) {
+        for (int i = 0; i < (int)vertexSet_.size(); i++) {
+            for (int j = 0; j < (int)vertexSet_.size(); j++) {
                 if ((dist[i][k] + dist[k][j]) < dist[i][j]) {
                     dist[i][j] = dist[i][k] + dist[k][j];
                 }
@@ -299,8 +299,8 @@ Graph *Graph::createAuxGraph(double **dist) const {
     for (Vertex *vertex: vertexSet_)
         newGraph->addVertex(new Vertex(vertex->getId(), vertex->getLatitude(), vertex->getLongitude()));
 
-    for (int i = 0; i < vertexSet_.size(); i++) {
-        for (int j = i + 1; j < vertexSet_.size(); j++) {
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
+        for (int j = i + 1; j < (int)vertexSet_.size(); j++) {
             newGraph->addEdge(i, j, dist[i][j]);
         }
     }
