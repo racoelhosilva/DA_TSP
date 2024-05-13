@@ -315,7 +315,7 @@ double Graph::realWorldTsp(int startId) {
 
     double totalDistance = auxGraph->christofidesStarTsp(startId);
 
-    deleteMatrix(dist);
+    deleteMatrix(dist, (int)vertexSet_.size());
     delete auxGraph;
 
     return totalDistance;

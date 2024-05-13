@@ -153,7 +153,6 @@ public:
      */
     static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
-    bool respectsTriangularInequality();
 private:
     /**
      * @brief Calculates the distance between two vertices using the haversine distance formula
