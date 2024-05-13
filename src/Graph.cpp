@@ -173,7 +173,29 @@ double Graph::heldKarpTsp() {
 }
 
 double Graph::doubleMstTsp(int startId) {
-    return 0.0;
+    if (vertexSet_.empty())
+        return 0;
+
+    Graph *copy = createCompleteCopy();
+
+    vector<Edge*> edges;
+    edges.reserve(copy->vertexSet_.size() * copy->vertexSet_.size());
+    for (Vertex *v: copy->vertexSet_) {
+        for (Edge *edge: v->getAdj()) {
+            edges.push_back(edge);
+            edge->setSelected(false);
+        }
+    }
+
+    copy->kruskal(edges);
+
+    for (Vertex *vertex: copy->vertexSet_)
+        vertex->setVisited(false);
+    Vertex *root = copy->findVertex(startId), *last = root;
+    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(startId)->getWeight();
+
+    delete copy;
+    return res;
 }
 
 double Graph::nearestNeighbourTsp(int startId) {
@@ -219,14 +241,14 @@ double Graph::nearestNeighbourTsp(int startId) {
     return distance;
 }
 
-double Graph::christofidesTsp(int startId) {
+double Graph::christofidesStarTsp(int startId) {
     if (vertexSet_.empty())
         return 0;
 
     Graph *copy = createCompleteCopy();
 
     vector<Edge*> edges;
-    edges.reserve(copy->vertexSet_.size() * copy->vertexSet_.size());
+    edges.reserve(copy->vertexSet_.size() * (copy->vertexSet_.size() - 1));
     for (Vertex *v: copy->vertexSet_) {
         for (Edge *edge: v->getAdj()) {
             edges.push_back(edge);
@@ -236,20 +258,67 @@ double Graph::christofidesTsp(int startId) {
 
     copy->kruskal(edges);
     for (Vertex *vertex: copy->vertexSet_)
+        vertex->setVisited(false);
+    Vertex *root = copy->findVertex(startId), *last = root;
+    double res1 = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(startId)->getWeight();
+
+    for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(vertex->getDegree() % 2 == 0);
     copy->minWeightPerfectMatchingGreedy(edges);
 
     for (Vertex *vertex: copy->vertexSet_)
         vertex->setVisited(false);
-    Vertex *root = copy->findVertex(startId), *last = root;
-    double res = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(0)->getWeight();
+    root = copy->findVertex(startId);
+    last = root;
+    double res2 = copy->hamiltonianCircuitDfs(root, last) + last->findEdgeTo(startId)->getWeight();
 
     delete copy;
-    return res;
+    return min(res1, res2);
+}
+
+double **Graph::floydWarshall()
+{
+    double **dist = getDistMatrix();
+
+    for (int k = 0; k < (int)vertexSet_.size(); k++) {
+        for (int i = 0; i < (int)vertexSet_.size(); i++) {
+            for (int j = 0; j < (int)vertexSet_.size(); j++) {
+                if ((dist[i][k] + dist[k][j]) < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    return dist;
+}
+
+Graph *Graph::createAuxGraph(double **dist) const {
+    auto newGraph = new Graph;
+
+    for (Vertex *vertex: vertexSet_)
+        newGraph->addVertex(new Vertex(vertex->getId(), vertex->getLatitude(), vertex->getLongitude()));
+
+    for (int i = 0; i < (int)vertexSet_.size(); i++) {
+        for (int j = i + 1; j < (int)vertexSet_.size(); j++) {
+            newGraph->addEdge(i, j, dist[i][j]);
+        }
+    }
+
+    return newGraph;
 }
 
 double Graph::realWorldTsp(int startId) {
-    return 0.0;
+    double **dist = floydWarshall();
+
+    auto *auxGraph = createAuxGraph(dist);
+
+    double totalDistance = auxGraph->christofidesStarTsp(startId);
+
+    deleteMatrix(dist);
+    delete auxGraph;
+
+    return totalDistance;
 }
 
 Graph *Graph::parseToyGraph(const std::string& edgeFilename) {

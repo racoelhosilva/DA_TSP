@@ -110,12 +110,12 @@ public:
      * @param startId The id of the vertex from where to start the algorithm
      * @return The cost of the solution found
      */
-    double christofidesTsp(int startId);
+    double christofidesStarTsp(int startId);
 
-    /**  TODO: specify the algorithm
+    /**
      * @brief Calculates an approximate solution of the TSP using an heuristic that always finds a solution for any
      * connected graph
-     * @details The algorithm is based on the [ --- ] heuristic. To make it work with graphs that are not fully
+     * @details The algorithm is based on the Christofides* heuristic. To make it work with graphs that are not fully
      * connected and without generating new edges, while still guaranteeing finding a solution in polynomial time, the
      * condition of the TSP saying that all vertices must be visited exactly once is relaxed, allowing a vertex to be
      * visited more than once. Complexity: O(V^3), where V is the number of vertices in the graph.
@@ -153,6 +153,7 @@ public:
      */
     static Graph *parseRealWorldGraph(const std::string &nodeFilename, const std::string &edgeFilename);
 
+    bool respectsTriangularInequality();
 private:
     /**
      * @brief Calculates the distance between two vertices using the haversine distance formula
@@ -227,6 +228,22 @@ private:
      * @param edges Vector with the edges of the graph
      */
     void kruskal(std::vector<Edge*> &edges);
+
+    /**
+     * @brief Floyd-Warshall algorithm to find the shortest path between all pairs of vertices
+     * @details Complexity: O(V^3), where V is the number of vertices in the graph.
+     * @return Matrix with the shortest paths between all pairs of vertices
+    */
+    double **floydWarshall();
+
+    /**
+     * @brief Creates an auxiliary graph with the distances between the vertices
+     * @details Complexity: O(V^2), where V is the number of vertices in the graph.
+     * @param dist Matrix with the distances between the vertices
+     * @return Pointer to the auxiliary graph
+    */
+    Graph *createAuxGraph(double **dist) const;
+
 
     /**
      * @brief Calculates an approximated minimum weight perfect matching of the unvisited vertices, using a greedy
