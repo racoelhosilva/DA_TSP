@@ -8,8 +8,7 @@
 class Edge;
 
 /**
- * @brief Class that represents a vertex
- * @tparam T Type of the vertex's info
+ * @brief Class that represents a vertex in a graph
  */
 class Vertex {
 public:
@@ -22,6 +21,7 @@ public:
 
     /**
      * @brief Destructor of the Vertex class
+     * @details Complexity: O(E), where E is the number of outgoing edges of the vertex
      */
     virtual ~Vertex();
 
@@ -31,7 +31,16 @@ public:
      */
     int getId() const;
 
+    /**
+     * @brief Returns the latitude of the vertex
+     * @return Latitude of the vertex
+     */
     double getLatitude() const;
+
+    /**
+     * @brief Returns the longitude of the vertex
+     * @return Longitude of the vertex
+     */
     double getLongitude() const;
 
     /**
@@ -53,15 +62,29 @@ public:
     bool isProcessing() const;
 
     /**
-     * @brief Returns the parent's edge that connects to this vertex (auxiliary to graph searches)
+     * @brief Returns the parent's edge that connects to this vertex (for storing the solution to the TSP)
      * @return The parent's edge to this vertex
      */
     Edge *getPath() const;
 
+    /**
+     * @brief Returns the edge that connects this vertex to the starting vertex
+     * @return The edge from this vertex to the start
+     */
     Edge *getPathToStart() const;
 
+    /**
+     * @brief Returns the degree of the vertex
+     * @return Degree of the vertex
+     */
     int getDegree() const;
 
+    /**
+     * @brief Returns the edge that connects this vertex to the destination vertex
+     * @details Complexity: O(E), where E is the number of outgoing edges of the vertex
+     * @param destId The destination vertex's id
+     * @return The edge that connects this vertex to the destination vertex, or nullptr if it does not exist
+     */
     Edge *findEdgeTo(int destId) const;
 
     /**
@@ -77,18 +100,26 @@ public:
     void setProcessing(bool processing);
 
     /**
-     * @brief Sets the parent's edge that connects to this vertex (auxiliary to graph searches)
+     * @brief Sets the parent's edge that connects to this vertex (for storing the solution to the TSP)
      * @param path The parent's edge to this vertex
      */
     void setPath(Edge *path);
 
+    /**
+     * @brief Sets the edge that connects this vertex to the starting vertex
+     * @param pathToStart Edge from this vertex to the start
+     */
     void setPathToStart(Edge *pathToStart);
 
+    /**
+     * @brief Sets the degree of the vertex
+     * @param degree Degree of the vertex
+     */
     void setDegree(int degree);
 
     /**
-     * @brief Adds an outgoing edge from this vertex to dest, and the same edge as an incoming edge of dest
-     * Complexity: O(1).
+     * @brief Adds an outgoing edge from this vertex to dest
+     * @details Complexity: O(1).
      * @param dest Destination of the pipe
      * @param w Edge's weight
      * @return Pointer to the newly created edge
@@ -105,15 +136,6 @@ protected:
     Edge *path_ = nullptr;
     Edge *pathToStart_ = nullptr;
     int degree_ = 0;
-
-protected:
-
-    /**
-     * @brief Removes the edge from the list of incoming edges of the destination and frees it.
-     * Complexity: O(E), where E is the number of incoming edges of the destination vertex
-     * @param edge The edge to be deleted
-     */
-    void deleteEdge(Edge *edge);
 };
 
 #endif //DA_TSP_VERTEX_H

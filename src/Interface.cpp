@@ -199,7 +199,7 @@ void Interface::mainMenu() {
     switch (choice) {
         case 1: {
             start = chrono::high_resolution_clock::now();
-            result = graph_->backtrackingTsp(0);
+            result = graph_->backtrackingTsp();
             end = chrono::high_resolution_clock::now();
             title = "Backtracking";
             execution = end - start;
@@ -214,7 +214,7 @@ void Interface::mainMenu() {
                 return;
             }
             start = chrono::high_resolution_clock::now();
-            result = graph_->heldKarpTsp(0);
+            result = graph_->heldKarpTsp();
             end = chrono::high_resolution_clock::now();
             title = "Held-Karp";
             execution = end - start;
@@ -229,7 +229,6 @@ void Interface::mainMenu() {
             execution = end - start;
             stats_.push_back({title, result, execution.count()});
             break;
-
         }
         case 4: {
             start = chrono::high_resolution_clock::now();
@@ -260,7 +259,6 @@ void Interface::mainMenu() {
             break;
         }
         case 7: {
-            double (Graph::*algorithm)(int);
             int numVertices, numEdges;
 
             numVertices = (int)graph_->getVertexSet().size();
@@ -268,27 +266,32 @@ void Interface::mainMenu() {
             if (numVertices < 25) {
                 cout << "Number of vertices: " << numVertices << FAINT << " (< 25)" << RESET << '\n';
                 cout << BOLD << "  Choosing Held-Karp algorithm" << '\n' << '\n';
-                algorithm = &Graph::heldKarpTsp;
+                start = chrono::high_resolution_clock::now();
+                result = graph_->heldKarpTsp();
+                end = chrono::high_resolution_clock::now();
             } else if (numEdges < (numVertices - 1) * numVertices / 2) {
                 cout << "Number of vertices: " << numVertices << FAINT << " (>= 25)" << RESET << '\n';
                 cout << "Graph is not fully connected" << '\n';
                 cout << BOLD << "  Choosing Real World heuristic" << RESET << FAINT << " (starting in 0)" << RESET << '\n' << '\n';
-                algorithm = &Graph::realWorldTsp;
+                start = chrono::high_resolution_clock::now();
+                result = graph_->realWorldTsp(0);
+                end = chrono::high_resolution_clock::now();
             } else if (numVertices < 1000) {
                 cout << "Number of vertices: " << numVertices << FAINT << " (>= 25 and < 1000)" << RESET << '\n';
                 cout << "Graph is fully connected" << '\n';
                 cout << BOLD << "  Choosing Christofides* heuristic" << RESET << '\n' << '\n';
-                algorithm = &Graph::christofidesStarTsp;
+                start = chrono::high_resolution_clock::now();
+                result = graph_->christofidesStarTsp(0);
+                end = chrono::high_resolution_clock::now();
             } else {
                 cout << "Number of vertices: " << numVertices << FAINT << " (> 1000)" << RESET << '\n';
                 cout << "Graph is fully connected" << '\n';
                 cout << BOLD << "  Choosing Nearest Neighbor heuristic" << RESET << '\n' << '\n';
-                algorithm = &Graph::nearestNeighbourTsp;
+                start = chrono::high_resolution_clock::now();
+                result = graph_->nearestNeighbourTsp(0);
+                end = chrono::high_resolution_clock::now();
             }
 
-            start = chrono::high_resolution_clock::now();
-            result = (graph_->*algorithm)(0);
-            end = chrono::high_resolution_clock::now();
             execution = end - start;
             break;
         }

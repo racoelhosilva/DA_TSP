@@ -62,21 +62,6 @@ void Vertex::setPath(Edge *path) {
     path_ = path;
 }
 
-void Vertex::deleteEdge(Edge *edge) {
-    Vertex *dest = edge->getDest();
-
-    auto it = dest->adj_.begin();
-    while (it != dest->adj_.end()) {
-        if ((*it)->getOrig()->getId() == id_) {
-            it = dest->adj_.erase(it);
-        }
-        else {
-            it++;
-        }
-    }
-    delete edge;
-}
-
 void Vertex::setPathToStart(Edge *pathToStart) {
     pathToStart_ = pathToStart;
 }
