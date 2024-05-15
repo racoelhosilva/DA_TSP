@@ -487,6 +487,8 @@ void Interface::statistics() {
               [](const Statistic& s1, const Statistic& s2){return s1.result < s2.result || (s1.result == s2.result && s1.time < s2.time);});
     cout << BOLD << INVERT << std::string(15,' ') << "Algorithm" << std::string(16,' ') << left << setw(20) << "TSP Result" << setw(20) << "Time" << RESET << '\n';
     for (const Statistic& s : stats_){
+        if (s.result < 0 || isinf(s.result))
+            continue;
         cout << "│" << std::string(2, ' ') << BOLD << left << setw(37) << s.algorithm << RESET << fixed << setprecision(3) << setw(20) << s.result << setprecision(10) << setw(19) << s.time << "│" << '\n';
     }
     printBottom();
