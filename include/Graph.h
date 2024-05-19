@@ -114,7 +114,7 @@ public:
 
     /**
      * @brief Calculates an approximate solution of the TSP using an heuristic that always finds a solution for any
-     * connected graph
+     * connected graph.
      * @details The algorithm is based on the Christofides* heuristic. To make it work with graphs that are not fully
      * connected and without generating new edges, while still guaranteeing finding a solution in polynomial time, the
      * condition of the TSP saying that all vertices must be visited exactly once is relaxed, allowing a vertex to be
@@ -122,7 +122,7 @@ public:
      * @param startId The id of the vertex from where to start the algorithm
      * @return The cost of the solution found
      */
-    double realWorldTsp(int startId);
+    double shortcuttingChristofidesStarTsp(int startId);
 
     /**
      * @brief Parses a graph from the file with the edges

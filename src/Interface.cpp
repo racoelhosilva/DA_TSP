@@ -170,7 +170,7 @@ void Interface::mainMenu() {
              "Nearest Neighbour Heuristic",
              "Double Minimum Spanning Tree Heuristic",
              "Christofides* Heuristic",
-             "Real World Heuristic",
+             "Shortcutting Christofides* Heuristic",
              "Choose Best Algorithm",
              "Statistics",
              "Choose your operation:"
@@ -222,8 +222,9 @@ void Interface::mainMenu() {
             break;
         }
         case 3: {
+            startId = receiveVertexId();
             start = chrono::high_resolution_clock::now();
-            result = graph_->nearestNeighbourTsp(0);
+            result = graph_->nearestNeighbourTsp(startId);
             end = chrono::high_resolution_clock::now();
             title = "Nearest Neighbor";
             execution = end - start;
@@ -231,8 +232,9 @@ void Interface::mainMenu() {
             break;
         }
         case 4: {
+            startId = receiveVertexId();
             start = chrono::high_resolution_clock::now();
-            result = graph_->doubleMstTsp(0);
+            result = graph_->doubleMstTsp(startId);
             end = chrono::high_resolution_clock::now();
             title = "Double MST";
             execution = end - start;
@@ -240,8 +242,9 @@ void Interface::mainMenu() {
             break;
         }
         case 5: {
+            startId = receiveVertexId();
             start = chrono::high_resolution_clock::now();
-            result = graph_->christofidesStarTsp(0);
+            result = graph_->christofidesStarTsp(startId);
             end = chrono::high_resolution_clock::now();
             title = "Christofides*";
             execution = end - start;
@@ -251,9 +254,9 @@ void Interface::mainMenu() {
         case 6: {
             startId = receiveVertexId();
             start = chrono::high_resolution_clock::now();
-            result = graph_->realWorldTsp(startId);
+            result = graph_->shortcuttingChristofidesStarTsp(startId);
             end = chrono::high_resolution_clock::now();
-            title = "Real World";
+            title = "Shortcutting Christofides*";
             execution = end - start;
             stats_.push_back({title, result, execution.count()});
             break;
@@ -272,9 +275,9 @@ void Interface::mainMenu() {
             } else if (numEdges < (numVertices - 1) * numVertices / 2) {
                 cout << "Number of vertices: " << numVertices << FAINT << " (>= 25)" << RESET << '\n';
                 cout << "Graph is not fully connected" << '\n';
-                cout << BOLD << "  Choosing Real World heuristic" << RESET << FAINT << " (starting in 0)" << RESET << '\n' << '\n';
+                cout << BOLD << "  Choosing Shortcutting Christofides* heuristic" << RESET << FAINT << " (starting in 0)" << RESET << '\n' << '\n';
                 start = chrono::high_resolution_clock::now();
-                result = graph_->realWorldTsp(0);
+                result = graph_->shortcuttingChristofidesStarTsp(0);
                 end = chrono::high_resolution_clock::now();
             } else if (numVertices < 1000) {
                 cout << "Number of vertices: " << numVertices << FAINT << " (>= 25 and < 1000)" << RESET << '\n';

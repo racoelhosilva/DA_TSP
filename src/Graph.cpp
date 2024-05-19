@@ -308,7 +308,7 @@ Graph *Graph::createAuxGraph(double **dist) const {
     return newGraph;
 }
 
-double Graph::realWorldTsp(int startId) {
+double Graph::shortcuttingChristofidesStarTsp(int startId) {
     double **dist = floydWarshall();
 
     auto *auxGraph = createAuxGraph(dist);
