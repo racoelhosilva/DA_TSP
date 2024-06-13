@@ -1,3 +1,9 @@
+<h1 align="center">DA - Travelling Salesperson Problem</h1>
+
+><p align="center">
+> Calculate the TSP for different graphs using multiple approaches and heuristics
+></p>
+
 ### Running the Project
 
 If the project is being run in the CLion terminal, make sure the option "Emulate terminal in output console" is enabled
@@ -24,3 +30,10 @@ $ tree graph
     ├── Real World
     └── Toy
 ```
+
+---
+
+> Class: 2LEIC15 Group: G02  
+> Final Grade: 20.0  
+> Professors: Liliana Ferreira  
+> Created in May 2024 for DA (Desenho de Algoritmos) [FEUP-L.EIC016]  
